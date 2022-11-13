@@ -79,6 +79,7 @@ def general_tubes():
 
     # Holes Function
     def holes_func(length,width,number,x,i,rad):
+        file.write('setCurrentLayer("Holes");\n')
         while i > 0:
             location = length/(number+1)
             count = 1
@@ -94,6 +95,7 @@ def general_tubes():
 
     # Parameter Function
     def parameter_func(length,width,x,i):
+        file.write('setCurrentLayer("parimeter");\n')
         while i > 0:
             file.write("drawRectangle("+str(width)+","+str(length)+","+str(x)+",0);\n")
             x = x + float(width)
@@ -185,14 +187,23 @@ def general_tubes():
 
 
     with open("box_maker.js","w") as file:
+        
+        # Create Javascript parimeter function (boxes)
         file.write("function drawRectangle(width, height, x, y){\n \
         addLine(x, y, x, y + height);\n \
         addLine(x, y, x + width, y);\n \
         addLine(x + width, y, x + width, y + height);\n \
         addLine(x, y + height, x + width, y + height);\n}\n\n")
 
+        # Create Javascript circle function
         file.write("function drawCircle(x,y,size){\n \
-        addCircle(x,y,size)\n}\n\n")
+        addCircle(x,y,size);\n}\n")
+
+        # Add layers
+        file.write('addLayer("Holes", "cyan", "CONTINUOUS", RLineweight.Weight025);\n')
+        file.write('addLayer("parimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
+
+
 
 
         ##############################

@@ -61,9 +61,9 @@ def sliders():
                 temp = number
                 while temp > 0:
                     if (i % 2) == 0:
-                        file.write("drawCircle("+str(x+1.5)+","+str(location*count)+","+str(rad)+");\n")
+                        file.write(f"drawCircle({x+1.5},{location*count},{rad});\n")
                     else:
-                        file.write("drawCircle("+str(x+0.5)+","+str(location*count)+","+str(rad)+");\n")
+                        file.write(f"drawCircle({x+0.5},{location*count},{rad});\n")
                     count+=1
                     temp-=1
                
@@ -75,7 +75,7 @@ def sliders():
                 count = 1
                 temp = number
                 while temp > 0:
-                    file.write("drawCircle("+str(x+(width/2))+","+str(location*count)+","+str(rad)+");\n")
+                    file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
                     count+=1
                     temp-=1
                 x = x + float(width)
@@ -87,11 +87,11 @@ def sliders():
 
 
 
-    # Parameter Function
+    # Perimeter Function
     def parameter_func(length,width,x,i):
-        file.write('setCurrentLayer("parimeter");\n')
+        file.write('setCurrentLayer("perimeter");\n')
         while i > 0:
-            file.write("drawRectangle("+str(width)+","+str(length)+","+str(x)+",0);\n")
+            file.write(f"drawRectangle({width},{length},{x},0);\n")
             x = x + float(width)
             i-=1
         return
@@ -117,7 +117,7 @@ def sliders():
 
     with open("box_maker.js","w") as file:
         
-        # Create Javascript parimeter function (boxes)
+        # Create Javascript parameter function (boxes)
         file.write("function drawRectangle(width, height, x, y){\n \
         addLine(x, y, x, y + height);\n \
         addLine(x, y, x + width, y);\n \
@@ -130,7 +130,7 @@ def sliders():
 
         # Add layers
         file.write('addLayer("Holes", "cyan", "CONTINUOUS", RLineweight.Weight025);\n')
-        file.write('addLayer("parimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
+        file.write('addLayer("perimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
 
 
         ##############################

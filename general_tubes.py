@@ -68,7 +68,7 @@ def general_tubes():
     def rad_hole(measurement1,measurement2,type):
         yesno = ""
         while yesno not in ["y","Y","n","N"]:
-                yesno = input("Do the "+str(measurement1)+" and the "+str(measurement2)+" "+type+" tube have the same size holes?(Y/n): ")
+                yesno = input(f"Do the {measurement1} and the {measurement2} {type} tube have the same size holes?(Y/n): ")
                 if yesno in ["y","Y"]:
                     return False
                 elif yesno in ["n","N"]:
@@ -85,7 +85,7 @@ def general_tubes():
             count = 1
             temp = number
             while temp > 0:
-                file.write("drawCircle("+str(x+(width/2))+","+str(location*count)+","+str(rad)+");\n")
+                file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
                 count+=1
                 temp-=1
             x = x + float(width)
@@ -95,9 +95,9 @@ def general_tubes():
 
     # Parameter Function
     def parameter_func(length,width,x,i):
-        file.write('setCurrentLayer("parimeter");\n')
+        file.write('setCurrentLayer("Perimeter");\n')
         while i > 0:
-            file.write("drawRectangle("+str(width)+","+str(length)+","+str(x)+",0);\n")
+            file.write(f"drawRectangle({width},{length},{x},0);\n")
             x = x + float(width)
             i-=1
         return
@@ -151,7 +151,7 @@ def general_tubes():
     # Ask how many tubes there are
     if multi_width == True or multi_length == True:
         total_am = int(input("How many tubes are there in total?: "))
-        first_type_am = int(input("How many tubes are "+str(first_width)+" in width?: "))
+        first_type_am = int(input(f"How many tubes are {first_width} in width?: "))
         second_type_am = total_am - first_type_am
     else:
         first_type_am = int(input("How many tubes are there in total?: "))
@@ -178,17 +178,17 @@ def general_tubes():
 
     # Ask how many holes per tube
     if multi_length == True:
-        first_holes = int(input("Amount of holes in the "+str(first_length)+" in. ?: "))
-        second_holes = int(input("Amount of holes in the "+str(second_length)+" in. ?: "))
+        first_holes = int(input(f"Amount of holes in the {first_length} in. ?: "))
+        second_holes = int(input(f"Amount of holes in the {second_length} in. ?: "))
     else:
-        first_holes = int(input("Amount of holes in the "+str(first_length)+" in. ?: "))
+        first_holes = int(input(f"Amount of holes in the {first_length} in. ?: "))
         second_holes = first_holes
     refresh()
 
 
     with open("box_maker.js","w") as file:
         
-        # Create Javascript parimeter function (boxes)
+        # Create Javascript parameter function (boxes)
         file.write("function drawRectangle(width, height, x, y){\n \
         addLine(x, y, x, y + height);\n \
         addLine(x, y, x + width, y);\n \
@@ -201,7 +201,7 @@ def general_tubes():
 
         # Add layers
         file.write('addLayer("Holes", "cyan", "CONTINUOUS", RLineweight.Weight025);\n')
-        file.write('addLayer("parimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
+        file.write('addLayer("Perimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
 
 
 

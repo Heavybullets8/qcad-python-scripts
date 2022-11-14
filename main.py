@@ -15,7 +15,7 @@ while tube_type not in [1,2]:
     elif tube_type == 2:
         sliders()
     else: 
-        print("Error: "+str(tube_type)+" was not an option, try again..")
+        print(f"Error: {tube_type} was not an option, try again..")
 
 
-os.system('qcad -exec '+f"{os.getcwd()}"+'/box_maker.js')
+os.system(f'qcad -exec {os.getcwd()}/box_maker.js')

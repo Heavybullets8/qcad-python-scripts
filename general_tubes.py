@@ -18,8 +18,6 @@ def general_tubes():
     multi_width = False
     multi_length = False
 
-    # TODO: add offset for sliders
-
 
     def convert_to_float(frac_str):
         try:
@@ -65,10 +63,10 @@ def general_tubes():
 
 
     # Hole radius function
-    def rad_hole(measurement1,measurement2,type):
+    def rad_hole(measurement1,measurement2,LW):
         yesno = ""
         while yesno not in ["y","Y","n","N"]:
-                yesno = input(f"Do the {measurement1} and the {measurement2} {type} tube have the same size holes?(Y/n): ")
+                yesno = input(f"Do the {measurement1}in. and the {measurement2}in. {LW} tube have the same size holes?(Y/n): ")
                 if yesno in ["y","Y"]:
                     return False
                 elif yesno in ["n","N"]:
@@ -188,14 +186,14 @@ def general_tubes():
 
     with open("box_maker.js","w") as file:
         
-        # Create Javascript parameter function (boxes)
+        # Create Javascript Perimeter function (boxes)
         file.write("function drawRectangle(width, height, x, y){\n \
         addLine(x, y, x, y + height);\n \
         addLine(x, y, x + width, y);\n \
         addLine(x + width, y, x + width, y + height);\n \
         addLine(x, y + height, x + width, y + height);\n}\n\n")
 
-        # Create Javascript circle function
+        # Create Javascript Holes function
         file.write("function drawCircle(x,y,size){\n \
         addCircle(x,y,size);\n}\n")
 

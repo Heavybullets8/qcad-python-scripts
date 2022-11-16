@@ -75,31 +75,15 @@ def general_tubes():
                     print("Invalid input, please try again..")
 
 
-    # # Holes Function
-    # def holes_func(length,width,number,x,i,rad):
-    #     file.write('setCurrentLayer("Holes");\n')
-    #     while i > 0:
-    #         location = length/(number+1)
-    #         count = 1
-    #         temp = number
-    #         while temp > 0:
-    #             file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
-    #             count+=1
-    #             temp-=1
-    #         x = x + float(width)
-    #         i-=1
-    #     return
-
-
-    # Parameter Function
+    # Drawing Function
     def draw_func(length,width,x,i,number,rad,tube_count):
         excess = 0
         prior_excess = 0
-        if manual_mode == True:
-            for i in range(i):
-                
-                # Draw Rectangle
-                file.write('setCurrentLayer("Perimeter");\n')
+        for i in range(i):
+            
+            # Draw Rectangle
+            file.write('setCurrentLayer("Perimeter");\n')
+            if manual_mode == True:
                 excess = convert_to_float(input(f"What is the excess of tube {tube_count}?: "))
                 
                 # If there was no change, do not add the excess
@@ -109,31 +93,23 @@ def general_tubes():
                 # Remove excess from the previous exess, avoiding doubling up widths
                 if excess > prior_excess:
                     excess = excess - prior_excess
-               
-                file.write(f"drawRectangle({width},{length},{x+excess},0);\n")
-
-                # Draw Holes
-                count = 1
-                file.write('setCurrentLayer("Holes");\n')
-                for hole in range(number):
-                    location = length/(number+1)
-                    file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
-                    count+=1
-                tube_count+=1
-                x = x + float(width)
-        else:
-            for i in range(i):
-                file.write('setCurrentLayer("Perimeter");\n')
-                file.write(f"drawRectangle({width},{length},{x+excess},0);\n")
                 
-                count = 1
-                file.write('setCurrentLayer("Holes");\n')
-                for hole in range(number):
-                    location = length/(number+1)
-                    file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
-                    count+=1
-                x = x + float(width)
-                 
+            file.write(f"drawRectangle({width},{length},{x+excess},0);\n")
+
+            # Draw Holes
+            count = 1
+            file.write('setCurrentLayer("Holes");\n')
+            for hole in range(number):
+                location = length/(number+1)
+                if location*count > 118:
+                    file.write('setCurrentLayer("Holes_Ref");\n')
+                    file.write(f"drawCircle({x+(width/2)+excess},{location*count},{rad});\n")
+                else:
+                    file.write('setCurrentLayer("Holes");\n')
+                    file.write(f"drawCircle({x+(width/2)+excess},{location*count},{rad});\n")
+                count+=1
+            tube_count+=1
+            x = x + float(width)
         return x
 
 
@@ -243,12 +219,12 @@ def general_tubes():
         # Create Javascript Holes function
         file.write("function drawCircle(x,y,size){\n \
         addCircle(x,y,size);\n}\n")
+        
 
         # Add layers
         file.write('addLayer("Holes", "cyan", "CONTINUOUS", RLineweight.Weight025);\n')
+        file.write('addLayer("Holes_Ref", "gray", "CONTINUOUS", RLineweight.Weight025);\n')
         file.write('addLayer("Perimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
-
-
 
 
         ##############################

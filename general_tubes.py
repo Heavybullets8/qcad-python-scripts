@@ -62,17 +62,17 @@ def general_tubes():
         print(tabulate(my_data, headers=head, tablefmt="grid"))
 
 
-    # Hole radius function
-    def rad_hole(measurement1,measurement2,LW):
+    # User Input Yes or No Function
+    def yesno_func(user_input):
         yesno = ""
         while yesno not in ["y","Y","n","N"]:
-                yesno = input(f"Do the {measurement1}in. and the {measurement2}in. {LW} tube have the same size holes?(Y/n): ")
-                if yesno in ["y","Y"]:
-                    return False
-                elif yesno in ["n","N"]:
-                    return True
-                else:
-                    print("Invalid input, please try again..")
+            yesno = input(user_input)
+            if yesno in ["y","Y"]:
+                return False
+            elif yesno in ["n","N"]:
+                return True
+            else:
+                print("Invalid input, please try again..")
 
 
     # Drawing Function
@@ -101,12 +101,15 @@ def general_tubes():
             file.write('setCurrentLayer("Holes");\n')
             for hole in range(number):
                 location = length/(number+1)
+                
+                # If hole location exceeds plasma table length, set a different layer thats ignored in sheetcam
                 if location*count > 118:
                     file.write('setCurrentLayer("Holes_Ref");\n')
+                
+                if corners == True:
                     file.write(f"drawCircle({x+(width/2)+excess},{location*count},{rad});\n")
                 else:
-                    file.write('setCurrentLayer("Holes");\n')
-                    file.write(f"drawCircle({x+(width/2)+excess},{location*count},{rad});\n")
+                    file.write(f"drawCircle({x+1+excess},{location*count},{rad});\n")
                 count+=1
             tube_count+=1
             x = x + float(width)
@@ -114,27 +117,17 @@ def general_tubes():
 
 
     # Ask if there are multiple lengths of tube
-    while yesno not in ["y","Y","n","N"]:
-        yesno = input("Are all of the tubes the same length?(Y/n): ")
-        if yesno in ["y","Y"]:
-            multi_length = False
-        elif yesno in ["n","N"]:
-            multi_length = True
-        else:
-            print("Invalid input, please try again..")
-    yesno = ""
-
+    if yesno_func("Are all of the tubes the same length?(Y/n): ") == True:
+        multi_length = True
+    else:
+        multi_length = False
+            
 
     # Ask if there are multiple widths of tube
-    while yesno not in ["y","Y","n","N"]:
-        yesno = input("Are all of the tubes the same width?(Y/n): ")
-        if yesno in ["y","Y"]:
-            multi_width = False
-        elif yesno in ["n","N"]:
-            multi_width = True
-        else:
-            print("Invalid input, please try again..")
-    yesno = ""
+    if yesno_func("Are all of the tubes the same width?(Y/n): ") == True:
+        multi_width = True
+    else:
+        multi_width = False
     refresh()
 
 
@@ -170,9 +163,11 @@ def general_tubes():
 
     # Ask if tubes will have the same hole size
     if multi_width == True:
-            multi_hole_rad = rad_hole(first_width, second_width,"width")
+            # multi_hole_rad = rad_hole(first_width, second_width,"width")
+            multi_hole_rad = yesno_func(f"Do the {first_width}in. and the {second_width}in. width tube have the same size holes?(Y/n): ")
     elif multi_length == True:
-            multi_hole_rad = rad_hole(first_length, second_length,"length")
+            # multi_hole_rad = rad_hole(first_length, second_length,"length")
+            multi_hole_rad = yesno_func(f"Do the {first_length}in. and the {second_length}in. length tube have the same size holes?(Y/n): ")
     refresh()
 
 
@@ -197,15 +192,18 @@ def general_tubes():
 
 
     # Ask if we should offset 
-    while yesno not in ["y","Y","n","N"]:
-        yesno = input("Should we run this in Automatic mode?(Y/n): ")
-        if yesno in ["y","Y"]:
-            manual_mode = False
-        elif yesno in ["n","N"]:
-            manual_mode = True
-        else:
-            print("Invalid input, please try again..")
-    
+    if yesno_func("Should we run this in Automatic mode?(Y/n): ") == True:
+        manual_mode = True
+    else:
+        manual_mode = False
+    refresh()
+
+    # Ask if these are corners
+    if first_width == 3 and yesno_func("Are these corners?(Y/n): ") == True:
+        corners = True
+    else:
+        corners = False
+    refresh()
 
     with open("box_maker.js","w") as file:
         

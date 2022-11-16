@@ -75,30 +75,66 @@ def general_tubes():
                     print("Invalid input, please try again..")
 
 
-    # Holes Function
-    def holes_func(length,width,number,x,i,rad):
-        file.write('setCurrentLayer("Holes");\n')
-        while i > 0:
-            location = length/(number+1)
-            count = 1
-            temp = number
-            while temp > 0:
-                file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
-                count+=1
-                temp-=1
-            x = x + float(width)
-            i-=1
-        return
+    # # Holes Function
+    # def holes_func(length,width,number,x,i,rad):
+    #     file.write('setCurrentLayer("Holes");\n')
+    #     while i > 0:
+    #         location = length/(number+1)
+    #         count = 1
+    #         temp = number
+    #         while temp > 0:
+    #             file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
+    #             count+=1
+    #             temp-=1
+    #         x = x + float(width)
+    #         i-=1
+    #     return
 
 
     # Parameter Function
-    def parameter_func(length,width,x,i):
-        file.write('setCurrentLayer("Perimeter");\n')
-        while i > 0:
-            file.write(f"drawRectangle({width},{length},{x},0);\n")
-            x = x + float(width)
-            i-=1
-        return
+    def draw_func(length,width,x,i,number,rad,tube_count):
+        excess = 0
+        prior_excess = 0
+        if manual_mode == True:
+            for i in range(i):
+                
+                # Draw Rectangle
+                file.write('setCurrentLayer("Perimeter");\n')
+                excess = convert_to_float(input(f"What is the excess of tube {tube_count}?: "))
+                
+                # If there was no change, do not add the excess
+                if excess == prior_excess:
+                    excess = 0
+
+                # Remove excess from the previous exess, avoiding doubling up widths
+                if excess > prior_excess:
+                    excess = excess - prior_excess
+               
+                file.write(f"drawRectangle({width},{length},{x+excess},0);\n")
+
+                # Draw Holes
+                count = 1
+                file.write('setCurrentLayer("Holes");\n')
+                for hole in range(number):
+                    location = length/(number+1)
+                    file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
+                    count+=1
+                tube_count+=1
+                x = x + float(width)
+        else:
+            for i in range(i):
+                file.write('setCurrentLayer("Perimeter");\n')
+                file.write(f"drawRectangle({width},{length},{x+excess},0);\n")
+                
+                count = 1
+                file.write('setCurrentLayer("Holes");\n')
+                for hole in range(number):
+                    location = length/(number+1)
+                    file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
+                    count+=1
+                x = x + float(width)
+                 
+        return x
 
 
     # Ask if there are multiple lengths of tube
@@ -184,6 +220,17 @@ def general_tubes():
     refresh()
 
 
+    # Ask if we should offset 
+    while yesno not in ["y","Y","n","N"]:
+        yesno = input("Should we run this in Automatic mode?(Y/n): ")
+        if yesno in ["y","Y"]:
+            manual_mode = False
+        elif yesno in ["n","N"]:
+            manual_mode = True
+        else:
+            print("Invalid input, please try again..")
+    
+
     with open("box_maker.js","w") as file:
         
         # Create Javascript Perimeter function (boxes)
@@ -208,47 +255,31 @@ def general_tubes():
         ###########Drawing############
         ##############################
 
-        if multi_length == False and multi_width == False:
-            parameter_func(first_length,first_width,0,first_type_am)
-            holes_func(first_length,first_width,first_holes,0,first_type_am,first_diameter/2)
+        # length,width,x,i,number,rad
 
+        if multi_length == False and multi_width == False:
+            draw_func(first_length,first_width,0,first_type_am,first_holes,first_diameter/2,1)
 
         if multi_length == True and multi_width == False:
-
             # Draw first set of tube
-            parameter_func(first_length,first_width,x,first_type_am)
-            holes_func(first_length,first_width,first_holes,x,first_type_am,first_diameter/2)
+            x = draw_func(first_length,first_width,0,first_type_am,first_holes,first_diameter/2,1)
 
-            x = first_width * first_type_am
 
             # Draw second set of tube
-            parameter_func(second_length,first_width,x,second_type_am)
-            holes_func(second_length,first_width,second_holes,x,second_type_am,second_diameter/2)
-
+            draw_func(second_length,first_width,x,second_type_am,second_holes,second_diameter/2,first_type_am+1)
 
         if multi_length == True and multi_width == True:
-
             # Draw first set of tube
-            parameter_func(first_length,first_width,x,first_type_am)
-            holes_func(first_length,first_width,first_holes,x,first_type_am,first_diameter/2)
+            x = draw_func(first_length,first_width,0,first_type_am,first_holes,first_diameter/2,1)
 
-            x = first_width * first_type_am
-            
             # Draw second set of tube
-            parameter_func(second_length,second_width,x,second_type_am)
-            holes_func(second_length,second_width,second_holes,x,second_type_am,second_diameter/2)
-
+            draw_func(second_length,second_width,x,second_type_am,second_holes,second_diameter/2,first_type_am+1)
 
         if multi_length == False and multi_width == True:
-
             # Draw first set of tube
-            parameter_func(first_length,first_width,x,first_type_am)
-            holes_func(first_length,first_width,first_holes,x,first_type_am,first_diameter/2)
+            x = draw_func(first_length,first_width,0,first_type_am,first_holes,first_diameter/2,1)
 
-            x = first_width * first_type_am
-            
             # Draw second set of tube
-            parameter_func(first_length,second_width,x,second_type_am)
-            holes_func(first_length,second_width,first_holes,x,second_type_am,first_diameter/2)
+            draw_func(second_length,second_width,x,second_type_am,second_holes,second_diameter/2,first_type_am+1)
     
         file.close

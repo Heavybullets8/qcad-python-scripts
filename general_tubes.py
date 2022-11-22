@@ -1,259 +1,294 @@
-# def general_tubes():
-#     import os
-#     from tabulate import tabulate
-#     x = 0
-#     count = 0
-#     yesno = ""
-#     second_holes = "x"
-#     second_width = "x"
-#     second_length = "x"
-#     second_diameter = "x"
-#     second_type_am = "x"
-#     first_type_am = "x"
-#     first_holes = "x"
-#     first_width = "x"
-#     first_length = "x"
-#     first_diameter = "x"
-#     multi_hole_rad = False
-#     multi_width = False
-#     multi_length = False
+def general_tubes():
+    import os, threading
+    x = 0
+    count = 0
+    lengths = "x"
+    widths = "x"
+    total_tubes = "x"
+    hole_count = "x"
+    hole_rads = "x"
 
-
-#     def convert_to_float(frac_str):
-#         try:
-#             return float(frac_str)
-#         except ValueError:
-#             try:
-#                 num, denom = frac_str.split('/')
-#             except ValueError:
-#                 return None
-#             try:
-#                 leading, num = num.split(' ')
-#             except ValueError:
-#                 return float(num) / float(denom)        
-#             if float(leading) < 0:
-#                 sign_mult = -1
-#             else:
-#                 sign_mult = 1
-#             return float(leading) + sign_mult * (float(num) / float(denom))
-
-
-#     # refresh table
-#     def refresh():
-#         os.system('cls||clear -x')
-#         if multi_length == False and multi_width == False:
-#             head = [" ", "Tube"]
-#             my_data = [
-#                 ["Length", first_length],
-#                 ["Width", first_width],
-#                 ["Tubes #", first_type_am],
-#                 ["Diameter", first_diameter],
-#                 ["Holes #", first_holes]
-#             ]
-#         else:
-#             head = [" ", "Tube 1", "Tube 2"]
-#             my_data = [
-#                 ["Length", first_length,second_length],
-#                 ["Width", first_width,second_width],
-#                 ["# of Tubes", first_type_am,second_type_am],
-#                 ["Diameter", first_diameter,second_diameter],
-#                 ["Holes #", first_holes,second_holes]
-#             ]
-#         print(tabulate(my_data, headers=head, tablefmt="grid"))
-
-
-#     # User Input Yes or No Function
-#     def yesno_func(user_input):
-#         yesno = ""
-#         while yesno not in ["y","Y","n","N"]:
-#             yesno = input(user_input)
-#             if yesno in ["y","Y"]:
-#                 return False
-#             elif yesno in ["n","N"]:
-#                 return True
-#             else:
-#                 print("Invalid input, please try again..")
-
-
-#     # Drawing Function
-#     def draw_func(length,width,x,i,number,rad,tube_count):
-#         excess = 0
-#         prior_excess = 0
-#         for i in range(i):
-            
-#             # Draw Rectangle
-#             file.write('setCurrentLayer("Perimeter");\n')
-#             if manual_mode == True:
-#                 excess = convert_to_float(input(f"What is the excess of tube {tube_count}?: "))
-                
-#                 # If there was no change, do not add the excess
-#                 if excess == prior_excess:
-#                     excess = 0
-
-#                 # Remove excess from the previous exess, avoiding doubling up widths
-#                 if excess > prior_excess:
-#                     excess = excess - prior_excess
-                
-#             file.write(f"drawRectangle({width},{length},{x+excess},0);\n")
-
-#             # Draw Holes
-#             count = 1
-#             file.write('setCurrentLayer("Holes");\n')
-#             for hole in range(number):
-#                 location = length/(number+1)
-                
-#                 # If hole location exceeds plasma table length, set a different layer thats ignored in sheetcam
-#                 if location*count > 118:
-#                     file.write('setCurrentLayer("Holes_Ref");\n')
-                
-#                 if corners == True:
-#                     file.write(f"drawCircle({x+(width/2)+excess},{location*count},{rad});\n")
-#                 else:
-#                     file.write(f"drawCircle({x+1+excess},{location*count},{rad});\n")
-#                 count+=1
-#             tube_count+=1
-#             x = x + float(width)
-#         return x
-
-
-#     # Ask if there are multiple lengths of tube
-#     if yesno_func("Are all of the tubes the same length?(Y/n): ") == True:
-#         multi_length = True
-#     else:
-#         multi_length = False
-            
-
-#     # Ask if there are multiple widths of tube
-#     if yesno_func("Are all of the tubes the same width?(Y/n): ") == True:
-#         multi_width = True
-#     else:
-#         multi_width = False
-#     refresh()
-
-
-#     # Grab the length(s) of the tubes
-#     if multi_length == True:
-#         first_length = convert_to_float(input("Length of the first tube: "))
-#         second_length = convert_to_float(input("Length of the other tube: "))
-#     else:
-#         first_length = convert_to_float(input("Length of the tube: "))
-#         second_length = first_length
-#     refresh()
-
-
-#     # Grab the width(s) of the tubes
-#     if multi_width == True:
-#         first_width = convert_to_float(input("Width of the first tube: "))
-#         second_width = convert_to_float(input("Width of the other tube: "))
-#     else:
-#         first_width = convert_to_float(input("Width of the tube: "))
-#         second_width = first_width
-#     refresh()
-
-
-#     # Ask how many tubes there are
-#     if multi_width == True or multi_length == True:
-#         total_am = int(input("How many tubes are there in total?: "))
-#         first_type_am = int(input(f"How many tubes are {first_width} in width?: "))
-#         second_type_am = total_am - first_type_am
-#     else:
-#         first_type_am = int(input("How many tubes are there in total?: "))
-#     refresh()
-
-
-#     # Ask if tubes will have the same hole size
-#     if multi_width == True:
-#             # multi_hole_rad = rad_hole(first_width, second_width,"width")
-#             multi_hole_rad = yesno_func(f"Do the {first_width}in. and the {second_width}in. width tube have the same size holes?(Y/n): ")
-#     elif multi_length == True:
-#             # multi_hole_rad = rad_hole(first_length, second_length,"length")
-#             multi_hole_rad = yesno_func(f"Do the {first_length}in. and the {second_length}in. length tube have the same size holes?(Y/n): ")
-#     refresh()
-
-
-#     # Ask hole(s) diameter
-#     if multi_hole_rad == True:
-#         first_diameter = convert_to_float(input("Tube 1 hole diameter: "))
-#         second_diameter = convert_to_float(input("Tube 2 hole diameter: "))
-#     else:
-#         first_diameter = convert_to_float(input("Hole diameter: "))
-#         second_diameter = first_diameter
-#     refresh()
-
-
-#     # Ask how many holes per tube
-#     if multi_length == True:
-#         first_holes = int(input(f"Amount of holes in the {first_length} in. ?: "))
-#         second_holes = int(input(f"Amount of holes in the {second_length} in. ?: "))
-#     else:
-#         first_holes = int(input(f"Amount of holes in the {first_length} in. ?: "))
-#         second_holes = first_holes
-#     refresh()
-
-
-#     # Ask if we should offset 
-#     if yesno_func("Should we run this in Automatic mode?(Y/n): ") == True:
-#         manual_mode = True
-#     else:
-#         manual_mode = False
-#     refresh()
-
-#     # Ask if these are corners if the width is 3
-#     if first_width == 3 and second_width == 3 and yesno_func("Are these corners?(Y/n): ") == True:
-#         corners = True
-#     else:
-#         corners = False
-#     refresh()
-
-#     with open("box_maker.js","w") as file:
+    def convert_to_float(frac_str):
+        if "\'" in frac_str:
+            temp = frac_str.replace("\'", '')
+            return int(temp) * 12
+        elif "\"" in frac_str:
+            frac_str = frac_str.replace("\"", '')
         
-#         # Create Javascript Perimeter function (boxes)
-#         file.write("function drawRectangle(width, height, x, y){\n \
-#         addLine(x, y, x, y + height);\n \
-#         addLine(x, y, x + width, y);\n \
-#         addLine(x + width, y, x + width, y + height);\n \
-#         addLine(x, y + height, x + width, y + height);\n}\n\n")
+        try:
+            return float(frac_str)
+        except ValueError:
+            try:
+                num, denom = frac_str.split('/')
+            except ValueError:
+                return None
+            try:
+                leading, num = num.split(' ')
+            except ValueError:
+                return float(num) / float(denom)        
+            if float(leading) < 0:
+                sign_mult = -1
+            else:
+                sign_mult = 1
+            return float(leading) + sign_mult * (float(num) / float(denom))
 
-#         # Create Javascript Holes function
-#         file.write("function drawCircle(x,y,size){\n \
-#         addCircle(x,y,size);\n}\n")
+
+    #refresh table
+    def refresh():
+        os.system('clear -x')
         
+        for i in range(multi_number):
+            print(f"Tube      {i+1}")
+            
+            if type(lengths) == str:
+                print(f"Length:   x")
+            else:
+                print(f"Length:   {lengths[i]}")
+            
+            if type(widths) == str:
+                print(f"Width:    x")
+            else:    
+                print(f"Width:    {widths[i]}")
+                
+            if type(total_tubes) == str:
+                print(f"Tubes:    x")
+            else:
+                print(f"Tubes:    {total_tubes[i]}")
+        
+            if type(hole_rads) == str:
+                print(f"Diameter: x")
+            else:
+                print(f"Diameter: {hole_rads[i]}")
 
-#         # Add layers
-#         file.write('addLayer("Holes", "cyan", "CONTINUOUS", RLineweight.Weight025);\n')
-#         file.write('addLayer("Holes_Ref", "gray", "CONTINUOUS", RLineweight.Weight025);\n')
-#         file.write('addLayer("Perimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
+            if type(hole_count) == str:
+                print(f"Holes:    x\n")
+            else:
+                print(f"Holes:    {hole_count[i]}\n")
 
 
-#         ##############################
-#         ###########Drawing############
-#         ##############################
+    # User Input Yes or No Function
+    def yesno_func(user_input):
+        yesno = ""
+        while yesno not in ["y","Y","n","N"]:
+            yesno = input(user_input)
+            if yesno in ["y","Y"]:
+                return False
+            elif yesno in ["n","N"]:
+                return True
+            else:
+                print("Invalid input, please try again..")
 
-#         # length,width,x,i,number,rad
 
-#         if multi_length == False and multi_width == False:
-#             draw_func(first_length,first_width,0,first_type_am,first_holes,first_diameter/2,1)
+    # Drawing Function
+    def draw_func(length,width,x,tubes,number,rad,tube_count,corners):
+        excess = 0
+        prior_excess = 0
+        for i in range(tubes):
 
-#         if multi_length == True and multi_width == False:
-#             # Draw first set of tube
-#             x = draw_func(first_length,first_width,0,first_type_am,first_holes,first_diameter/2,1)
+            # Draw Rectangle
+            file.write('setCurrentLayer("Perimeter");\n')
+            if manual_mode == True:
+                excess = convert_to_float(input(f"What is the excess of tube {tube_count}?: "))
+                
+                # If there was no change, do not add the excess
+                if excess == prior_excess:
+                    excess = 0
+
+                # Remove excess from the previous exess, avoiding doubling up widths
+                if excess > prior_excess:
+                    excess = excess - prior_excess
+                
+            file.write(f"drawRectangle({width},{length},{x+excess},0);\n")
+
+            # Draw Holes
+            count = 0
+            floor = 1
+            roof = 1
+            file.write('setCurrentLayer("Holes");\n')
+            for hole in range(number):
+                location = length/(number+1)
+                count+=1
+                # If hole location exceeds plasma table length, set a different layer thats ignored in sheetcam
+                if location*count > 118:
+                    file.write('setCurrentLayer("Holes_Ref");\n')
+                
+                # print("number",number)
+                # print("hole", hole)
+                # print("count", count)
+
+                if corners == True:
+                    # file.write(f"drawCircle({x+1+excess},{location*count},{rad});\n")
+                    current_width = x+1+excess
+                else:
+                    current_width = x+(width/2)+excess
+                    
 
 
-#             # Draw second set of tube
-#             draw_func(second_length,first_width,x,second_type_am,second_holes,second_diameter/2,first_type_am+1)
+                # Even number of holes per tube
+                if (number % 2) != 0:
+                    if hole == 0:
+                        file.write(f"drawCircle({current_width},{6},{rad});\n")
+                    # Last row of holes end up 6 inches from the top
+                    elif hole == number-1:
+                        file.write(f"drawCircle({current_width},{length-6},{rad});\n")
+                    # Middle of the tube
+                    elif hole + .5 == number/2:
+                        file.write(f"drawCircle({current_width},{length/2},{rad});\n")
+                    # Lower half of the length
+                    elif hole+1 < number/2:
+                        file.write(f"drawCircle({current_width},{((length/2))/((number/2)-0.5)*floor},{rad});\n")
+                        floor+=1
+                    # Upper half of the length
+                    elif count >= number/2:
+                        file.write(f"drawCircle({current_width},{((length/2))/((number/2)-0.5)*roof+length/2},{rad});\n")
+                        roof+=1
+                    else:
+                        print(f"\nNo Trigger:\nHole: {hole+1}\nNumber:{number/2}")
 
-#         if multi_length == True and multi_width == True:
-#             # Draw first set of tube
-#             x = draw_func(first_length,first_width,0,first_type_am,first_holes,first_diameter/2,1)
 
-#             # Draw second set of tube
-#             draw_func(second_length,second_width,x,second_type_am,second_holes,second_diameter/2,first_type_am+1)
+                # Odd number of holes per tube
+                else:
+                    if hole == 0:
+                        file.write(f"drawCircle({current_width},{6},{rad});\n")
+                    # Last row of holes end up 6 inches from the top
+                    elif hole == number-1:
+                        file.write(f"drawCircle({current_width},{length-6},{rad});\n")
+                    # Draw Holes
+                    else:
+                        if ((length)/(number-1))*(hole) > length/2:
+                            file.write(f"drawCircle({current_width},{((length)/(number-1))*(hole)},{rad});\n")
+                        else:
+                            file.write(f"drawCircle({current_width},{((length)/(number-1))*(hole)},{rad});\n")
+                        
 
-#         if multi_length == False and multi_width == True:
-#             # Draw first set of tube
-#             x = draw_func(first_length,first_width,0,first_type_am,first_holes,first_diameter/2,1)
 
-#             # Draw second set of tube
-#             draw_func(second_length,second_width,x,second_type_am,second_holes,second_diameter/2,first_type_am+1)
+
+            tube_count+=1
+            x = x + float(width)
+        return x, count
+
+
+    os.system('clear -x')
+    # Ask how many different types of tubes there are
+    print("Note - Differences in tube is any change in width, or length of a tube")
+    multi_number = int(input("How many different type of tube is there?: "))   
+    refresh()
+
+
+    lengths = []
+    # Grab the length(s) of the tubes
+    if multi_number > 1:
+        for i in range(multi_number):
+            temp = convert_to_float(input(f"Length of tube type #{i+1}: "))
+            lengths.append(temp)
+    else:
+        temp = convert_to_float(input(f"Length of tube: "))
+        lengths.append(temp)
+    refresh()
+
+
+    widths = []
+    # Grab the width(s) of the tubes
+    if multi_number > 1:
+        for i in range(multi_number):
+            temp = convert_to_float(input(f"Width of tube type #{i+1}: "))
+            widths.append(temp)
+    else:
+        temp = convert_to_float(input(f"Width of tube?: "))
+        widths.append(temp)
+    refresh()
+
+
+    # Ask how many tubes there are
+    total_tubes = []
+    for i in range(multi_number):
+        temp = int(input(f"Number of tubes for #{i+1}: "))
+        total_tubes.append(temp)
+    refresh()
     
-#         file.close
+    
+    # Ask if tubes will have the same hole size
+    if multi_number > 1:
+        hole_rads = []
+        if yesno_func("Do the all of the tubes have the same hole size?(Y/n): ") == True:
+            for i in range(multi_number):
+                temp = convert_to_float(input(f"Hole size for tube #{i+1}: "))
+                hole_rads.append(temp)
+        else:
+            temp = convert_to_float(input("Hole diameter: "))
+            for i in range(multi_number):
+                hole_rads.append(temp)
+    else:
+        hole_rads = [convert_to_float(input("Hole diameter: "))]
+    refresh()
+
+
+    # Ask how many holes per tube
+    hole_count = []
+    if multi_number > 1:
+        holes = []
+        for i in range(multi_number):
+            temp = int(input(f"Amount of holes for tube #{i+1}: "))
+            hole_count.append(temp)
+    else:
+        hole_count = [int(input("Amount of holes per tube: "))]
+    refresh()
+
+
+    corners = []
+    # Ask if these are corners if the width is 3
+    for i in range(multi_number):
+        if widths[i] == 3 and yesno_func(f"Is Tube {i+1} a corner(offsets)(Y/n)?: ") == False:
+            corners.append(True)
+        else:
+            corners.append(False)
+    refresh()
+
+
+    # Ask if we should offset 
+    if yesno_func("Automatically place tube perimeters?(Y/n): ") == True:
+        manual_mode = True
+    else:
+        manual_mode = False
+
+
+    # # Ask if we should auto map holes
+    # if yesno_func("Automatically place hole locations(Y/n)") == True:
+    #     manual_holes = True
+    # else:
+    #     manual_holes = False
+    # refresh()
+
+
+    with open("box_maker.js","w") as file:
+        
+        # Create Javascript Perimeter function (boxes)
+        file.write("function drawRectangle(width, height, x, y){\n \
+        addLine(x, y, x, y + height);\n \
+        addLine(x, y, x + width, y);\n \
+        addLine(x + width, y, x + width, y + height);\n \
+        addLine(x, y + height, x + width, y + height);\n}\n\n")
+
+        # Create Javascript Holes function
+        file.write("function drawCircle(x,y,size){\n \
+        addCircle(x,y,size);\n}\n")
+        
+
+        # Add layers
+        file.write('addLayer("Holes", "cyan", "CONTINUOUS", RLineweight.Weight025);\n')
+        file.write('addLayer("Holes_Ref", "gray", "CONTINUOUS", RLineweight.Weight025);\n')
+        file.write('addLayer("Perimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
+
+
+        ##############################
+        ###########Drawing############
+        ##############################
+        
+        count = 1
+        if multi_number == 1:
+            draw_func(lengths[0],widths[0],0,total_tubes[0],hole_count[0],hole_rads[0]/2,count,corners[0])
+        else:
+            for i in range(multi_number):
+                x, count = draw_func(lengths[i],widths[i],x,total_tubes[i],hole_count[i],hole_rads[i]/2,count,corners[i])              
+
+        file.close

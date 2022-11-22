@@ -6,6 +6,7 @@ from test import *
 
 print("1) General Tubes")
 print("2) Sliders")
+print("3) Testing")
 print()
 
 tube_type = ""
@@ -15,6 +16,8 @@ while tube_type not in [1,2]:
         general_tubes()
     elif tube_type == 2:
         sliders()
+    elif tube_type == 3:
+        testing()
     else: 
         print(f"Error: {tube_type} was not an option, try again..")
 

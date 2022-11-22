@@ -1,4 +1,4 @@
-def general_tubes():
+def testing():
     import os, threading
     x = 0
     count = 0
@@ -80,11 +80,11 @@ def general_tubes():
 
 
     # Drawing Function
-    def draw_func(length,width,x,i,number,rad,tube_count,corners):
+    def draw_func(length,width,x,tubes,number,rad,tube_count,corners):
         excess = 0
         prior_excess = 0
-        for i in range(i):
-            
+        for i in range(tubes):
+
             # Draw Rectangle
             file.write('setCurrentLayer("Perimeter");\n')
             if manual_mode == True:
@@ -101,20 +101,68 @@ def general_tubes():
             file.write(f"drawRectangle({width},{length},{x+excess},0);\n")
 
             # Draw Holes
-            count = 1
+            count = 0
+            floor = 1
+            roof = 1
             file.write('setCurrentLayer("Holes");\n')
             for hole in range(number):
                 location = length/(number+1)
-                
+                count+=1
                 # If hole location exceeds plasma table length, set a different layer thats ignored in sheetcam
                 if location*count > 118:
                     file.write('setCurrentLayer("Holes_Ref");\n')
                 
+                # print("number",number)
+                # print("hole", hole)
+                # print("count", count)
+
                 if corners == True:
-                    file.write(f"drawCircle({x+1+excess},{location*count},{rad});\n")
+                    # file.write(f"drawCircle({x+1+excess},{location*count},{rad});\n")
+                    current_width = x+1+excess
                 else:
-                    file.write(f"drawCircle({x+(width/2)+excess},{location*count},{rad});\n")
-                count+=1
+                    current_width = x+(width/2)+excess
+                    
+
+
+                # Even number of holes per tube
+                if (number % 2) != 0:
+                    if hole == 0:
+                        file.write(f"drawCircle({current_width},{6},{rad});\n")
+                    # Last row of holes end up 6 inches from the top
+                    elif hole == number-1:
+                        file.write(f"drawCircle({current_width},{length-6},{rad});\n")
+                    # Middle of the tube
+                    elif hole + .5 == number/2:
+                        file.write(f"drawCircle({current_width},{length/2},{rad});\n")
+                    # Lower half of the length
+                    elif hole+1 < number/2:
+                        file.write(f"drawCircle({current_width},{((length/2))/((number/2)-0.5)*floor},{rad});\n")
+                        floor+=1
+                    # Upper half of the length
+                    elif count >= number/2:
+                        file.write(f"drawCircle({current_width},{((length/2))/((number/2)-0.5)*roof+length/2},{rad});\n")
+                        roof+=1
+                    else:
+                        print(f"\nNo Trigger:\nHole: {hole+1}\nNumber:{number/2}")
+
+
+                # Odd number of holes per tube
+                else:
+                    if hole == 0:
+                        file.write(f"drawCircle({current_width},{6},{rad});\n")
+                    # Last row of holes end up 6 inches from the top
+                    elif hole == number-1:
+                        file.write(f"drawCircle({current_width},{length-6},{rad});\n")
+                    # Draw Holes
+                    else:
+                        if ((length)/(number-1))*(hole) > length/2:
+                            file.write(f"drawCircle({current_width},{((length)/(number-1))*(hole)},{rad});\n")
+                        else:
+                            file.write(f"drawCircle({current_width},{((length)/(number-1))*(hole)},{rad});\n")
+                        
+
+
+
             tube_count+=1
             x = x + float(width)
         return x, count
@@ -198,11 +246,18 @@ def general_tubes():
 
 
     # Ask if we should offset 
-    if yesno_func("Should we run this in Automatic mode?(Y/n): ") == True:
+    if yesno_func("Automatically place tube perimeters?(Y/n): ") == True:
         manual_mode = True
     else:
         manual_mode = False
-    refresh()
+
+
+    # # Ask if we should auto map holes
+    # if yesno_func("Automatically place hole locations(Y/n)") == True:
+    #     manual_holes = True
+    # else:
+    #     manual_holes = False
+    # refresh()
 
 
     with open("box_maker.js","w") as file:

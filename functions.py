@@ -168,3 +168,9 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode):
             tube_count+=1
             x = x + float(width)
     return x, count
+
+
+
+def hole_checker(length,num_of_holes):
+    pass
+    

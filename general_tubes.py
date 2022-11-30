@@ -74,10 +74,14 @@ def general_tubes():
         for length in lengths:
             if length < 108:
                 hole_count.append(2)
-            elif length < 180:
+            elif length < 168:
                 hole_count.append(3)
-            else:
+            elif length < 216:
                 hole_count.append(4)
+            elif length < 228:
+                hole_count.append(5)
+            else: 
+                hole_count.append(6)
     else:
         # Ask how many holes per tube
         if multi_number > 1:

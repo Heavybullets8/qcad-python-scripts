@@ -1,90 +1,117 @@
-def sliders():
-    import os
-    from tabulate import tabulate
+from functions import *
+import os
+
+def testing():
     count = 0
-    yesno = ""
-    second_holes = "x"
-    second_width = "x"
-    second_length = "x"
-    second_diameter = "x"
-    second_type_am = "x"
-    first_type_am = "x"
-    first_holes = "x"
-    first_width = "x"
-    first_length = "x"
-    first_diameter = "x"
+    lengths = "x"
+    total_tubes = "x"
+    hole_count = "x"
+    hole_rads = [0.625,0.625]
     multi_hole_rad = False
     multi_width = False
     multi_length = False
 
 
-    def convert_to_float(frac_str):
-        try:
-            return float(frac_str)
-        except ValueError:
-            try:
-                num, denom = frac_str.split('/')
-            except ValueError:
-                return None
-            try:
-                leading, num = num.split(' ')
-            except ValueError:
-                return float(num) / float(denom)        
-            if float(leading) < 0:
-                sign_mult = -1
-            else:
-                sign_mult = 1
-            return float(leading) + sign_mult * (float(num) / float(denom))
 
 
-    # refresh table
-    def refresh():
-        os.system('cls||clear -x')
-        head = [" ", "Slider 1", "Slider 2"]
-        my_data = [
-            ["Length", first_length,second_length],
-            ["Width", 2,1],
-            ["# of Tubes", first_type_am,second_type_am],
-            ["Diameter", 0.625,0.625],
-            ["Holes #", first_holes,second_holes]
-        ]
-        print(tabulate(my_data, headers=head, tablefmt="grid"))
-
-
-    # Holes Function
-    def holes_func(length,width,number,x,i,rad):
+    def holes_func(length,width,num_of_holes,x,num_of_tubes,rad):
         file.write('setCurrentLayer("Holes");\n')
-        if width == 2:
-            while i > 0:
-                location = length/(number+1)
-                count = 1
-                temp = number
-                while temp > 0:
-                    if (i % 2) == 0:
-                        file.write(f"drawCircle({x+1.5},{location*count},{rad});\n")
+        
+        for tube in range(num_of_tubes):
+            for hole in range(num_of_holes):
+                
+                if width == 2:
+                    # If first hole
+                    if hole == 0: 
+                        if ((tube) % 2) == 0:
+                            file.write(f"drawCircle({x+1.5},{6},{rad});\n")
+                        else:
+                            file.write(f"drawCircle({x+0.5},{6},{rad});\n")
+                    # If last hole        
+                    elif hole == num_of_holes-1:
+                        if ((tube) % 2) == 0:
+                            file.write(f"drawCircle({x+1.5},{length-6},{rad});\n")
+                        else:
+                            file.write(f"drawCircle({x+0.5},{length-6},{rad});\n")
+                    # If middle Hole
+                    elif hole+1.5 == num_of_holes/2:
+                        if ((tube) % 2) == 0:
+                            file.write(f"drawCircle({x+1.5},{length/2},{rad});\n")
+                        else:
+                            file.write(f"drawCircle({x+0.5},{length/2},{rad});\n")         
+                    # Any other hole
                     else:
-                        file.write(f"drawCircle({x+0.5},{location*count},{rad});\n")
-                    count+=1
-                    temp-=1
+                        if ((tube) % 2) == 0:
+                            file.write(f"drawCircle({x+1.5},{(length/(num_of_holes-1))*(hole)},{rad});\n")
+                        else:
+                            file.write(f"drawCircle({x+0.5},{(length/(num_of_holes-1))*(hole)},{rad});\n")   
+                            
+                if width == 1:
+                    # If first hole
+                    if hole == 0: 
+                        file.write(f"drawCircle({x+.5},{4},{rad});\n")
+                    # If last hole        
+                    elif hole == num_of_holes-1:
+                        file.write(f"drawCircle({x+.5},{length-8},{rad});\n")
+                    # If middle Hole
+                    elif hole+1.5 == num_of_holes/2:
+                        file.write(f"drawCircle({x+.5},{length/2-2},{rad});\n")     
+                    # Any other hole
+                    else:
+                        file.write(f"drawCircle({x+.5},{(length/(num_of_holes-1))*(hole)-2},{rad});\n") 
+            x = x + width
+            
+            
+
+
+
+    # # Holes Function
+    # def holes_func(length,width,number,x,i,rad):
+    #     file.write('setCurrentLayer("Holes");\n')
+        
+    #     # 2 inch tube
+    #     if width == 2:
+    #         while i > 0:
+    #             location = length/(number+1)
+    #             count = 1
+    #             temp = number
+    #             while temp > 0:
+    #                 if i == 0: 
+    #                     if (i % 2) == 0:
+    #                         file.write(f"drawCircle({x+1.5},{6},{rad});\n")
+    #                     else:
+    #                         file.write(f"drawCircle({x+0.5},{6},{rad});\n")
+    #                 elif i == number-1:
+    #                     if (i % 2) == 0:
+    #                         file.write(f"drawCircle({x+1.5},{length-6},{rad});\n")
+    #                     else:
+    #                         file.write(f"drawCircle({x+0.5},{length-6},{rad});\n")         
+    #                 else:
+    #                     if (i % 2) == 0:
+    #                         file.write(f"drawCircle({x+1.5},{location*count},{rad});\n")
+    #                     else:
+    #                         file.write(f"drawCircle({x+0.5},{location*count},{rad});\n")            
+                            
+    #                 count+=1
+    #                 temp-=1
                
-                x = x + float(width)
-                i-=1
-        else: 
-            while i > 0:
-                location = length/(number+1)
-                count = 1
-                temp = number
-                while temp > 0:
-                    file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
-                    count+=1
-                    temp-=1
-                x = x + float(width)
-                i-=1
+    #             x = x + float(width)
+    #             i-=1
+        
+    #     # 1 inch tube
+    #     else: 
+    #         while i > 0:
+    #             location = length/(number+1)
+    #             count = 1
+    #             temp = number
+    #             while temp > 0:
+    #                 file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
+    #                 count+=1
+    #                 temp-=1
+    #             x = x + float(width)
+    #             i-=1
 
-        return
-
-
-
+    #     return
 
 
     # Perimeter Function
@@ -97,22 +124,30 @@ def sliders():
         return
 
 
+
+    lengths = []
     # Grab the length(s) of the sliders
-    first_length = convert_to_float(input("Length of the longer tube: "))
-    second_length = first_length - 4
-    refresh()
+    temp = convert_to_float(input("Length of tube: "))
+    temp1 = temp - 4
+    lengths.append(temp)
+    lengths.append(temp1)
+    refresh(2,lengths,[2,1],total_tubes,hole_rads,hole_count)
 
 
     # Ask how many tubes there are
-    first_type_am = int(input("How many tubes are there in total?: "))/2
-    second_type_am = first_type_am
-    refresh()
+    total_tubes = []
+    amnt_one_width = int(input("How many tubes are there in total?: "))
+    total_tubes.append(amnt_one_width/2)
+    total_tubes.append(amnt_one_width/2)
+    refresh(2,lengths,[2,1],total_tubes,hole_rads,hole_count)
 
 
+    hole_count = []
     # Ask how many holes per tube
-    first_holes = int(input("Amount of holes in the sliders: "))
-    second_holes = first_holes
-    refresh()
+    num_of_holes = int(input("Amount of holes in the sliders: "))
+    hole_count.append(num_of_holes)
+    hole_count.append(num_of_holes)
+    refresh(2,lengths,[2,1],total_tubes,hole_rads,hole_count)
 
 
     with open("box_maker.js","w") as file:
@@ -140,13 +175,13 @@ def sliders():
     
 
         # Draw first set of tube
-        parameter_func(first_length,2,0,first_type_am)
-        holes_func(first_length,2,first_holes,0,first_type_am,0.625/2)
+        parameter_func(lengths[0],2,0,int(amnt_one_width/2))
+        holes_func(lengths[0],2,num_of_holes,0,int(amnt_one_width/2),0.625/2)
 
-        x = 2.0 * first_type_am
+        x = 2.0 * int(amnt_one_width/2)
 
         # Draw second set of tube
-        parameter_func(second_length,1,x,second_type_am)
-        holes_func(second_length,1,second_holes,x,second_type_am,0.625/2)
+        parameter_func(lengths[1],1,x,int(amnt_one_width/2))
+        holes_func(lengths[0],1,num_of_holes,x,int(amnt_one_width/2),0.625/2)
 
         file.close

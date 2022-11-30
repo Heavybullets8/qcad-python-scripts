@@ -1,7 +1,7 @@
 from functions import *
 import os
 
-def testing():
+def sliders():
     count = 0
     lengths = "x"
     total_tubes = "x"
@@ -12,8 +12,7 @@ def testing():
     multi_length = False
 
 
-
-
+    # Holes Function
     def holes_func(length,width,num_of_holes,x,num_of_tubes,rad):
         file.write('setCurrentLayer("Holes");\n')
         
@@ -61,57 +60,6 @@ def testing():
                         file.write(f"drawCircle({x+.5},{(length/(num_of_holes-1))*(hole)-2},{rad});\n") 
             x = x + width
             
-            
-
-
-
-    # # Holes Function
-    # def holes_func(length,width,number,x,i,rad):
-    #     file.write('setCurrentLayer("Holes");\n')
-        
-    #     # 2 inch tube
-    #     if width == 2:
-    #         while i > 0:
-    #             location = length/(number+1)
-    #             count = 1
-    #             temp = number
-    #             while temp > 0:
-    #                 if i == 0: 
-    #                     if (i % 2) == 0:
-    #                         file.write(f"drawCircle({x+1.5},{6},{rad});\n")
-    #                     else:
-    #                         file.write(f"drawCircle({x+0.5},{6},{rad});\n")
-    #                 elif i == number-1:
-    #                     if (i % 2) == 0:
-    #                         file.write(f"drawCircle({x+1.5},{length-6},{rad});\n")
-    #                     else:
-    #                         file.write(f"drawCircle({x+0.5},{length-6},{rad});\n")         
-    #                 else:
-    #                     if (i % 2) == 0:
-    #                         file.write(f"drawCircle({x+1.5},{location*count},{rad});\n")
-    #                     else:
-    #                         file.write(f"drawCircle({x+0.5},{location*count},{rad});\n")            
-                            
-    #                 count+=1
-    #                 temp-=1
-               
-    #             x = x + float(width)
-    #             i-=1
-        
-    #     # 1 inch tube
-    #     else: 
-    #         while i > 0:
-    #             location = length/(number+1)
-    #             count = 1
-    #             temp = number
-    #             while temp > 0:
-    #                 file.write(f"drawCircle({x+(width/2)},{location*count},{rad});\n")
-    #                 count+=1
-    #                 temp-=1
-    #             x = x + float(width)
-    #             i-=1
-
-    #     return
 
 
     # Perimeter Function

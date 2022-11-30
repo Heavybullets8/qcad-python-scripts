@@ -66,16 +66,28 @@ def general_tubes():
     refresh(multi_number,lengths,widths,total_tubes,hole_rads,hole_count)
 
 
-    # Ask how many holes per tube
+
+    # Ask if we should Automatically set hole count based on length
+    auto_holes = yesno_func("Set # of holes automically?(Y/n): ")
     hole_count = []
-    if multi_number > 1:
-        holes = []
-        for i in range(multi_number):
-            temp = int(input("Amount of holes for tube #{i}: ".format(i=i+1)))
-            hole_count.append(temp)
+    if auto_holes ==  False:
+        for length in lengths:
+            if length < 108:
+                hole_count.append(2)
+            elif length < 180:
+                hole_count.append(3)
+            else:
+                hole_count.append(4)
     else:
-        hole_count = [int(input("Amount of holes per tube: "))]
-    refresh(multi_number,lengths,widths,total_tubes,hole_rads,hole_count)
+        # Ask how many holes per tube
+        if multi_number > 1:
+            holes = []
+            for i in range(multi_number):
+                temp = int(input("Amount of holes for tube #{i}: ".format(i=i+1)))
+                hole_count.append(temp)
+        else:
+            hole_count = [int(input("Amount of holes per tube: "))]
+        refresh(multi_number,lengths,widths,total_tubes,hole_rads,hole_count)
 
 
     corners = []

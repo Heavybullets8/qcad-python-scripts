@@ -13,64 +13,70 @@ def sliders():
 
 
     # Holes Function
-    def holes_func(length,width,num_of_holes,x,num_of_tubes,rad):
-        file.write('setCurrentLayer("Holes");\n')
-        
+    def draw_func_slider(length,width,hole_count,x,num_of_tubes,rad):
+        excess = 0
+        prior_excess = 0
         for tube in range(num_of_tubes):
-            for hole in range(num_of_holes):
+
+            # Draw Rectangle
+            file.write('setCurrentLayer("Perimeter");\n')
+            if manual_mode == True:
+                excess = convert_to_float(input("What is the excess of tube {tube_count}?: ".format(tube_count=tube+1)))
                 
+            # If there was no change, do not add the excess
+            if excess == prior_excess:
+                excess = 0
+
+            # Remove excess from the previous exess, avoiding doubling up widths
+            if excess > prior_excess:
+                excess = excess - prior_excess
+                
+            file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length,x=x+excess))
+
+            
+            file.write('setCurrentLayer("Holes");\n')
+            for hole in range(hole_count):
                 if width == 2:
                     # If first hole
                     if hole == 0: 
                         if ((tube) % 2) == 0:
-                            file.write(f"drawCircle({x+1.5},{6},{rad});\n")
+                            file.write("drawCircle({x},6,{rad});\n".format(x=x+1.5+excess, rad=rad))
                         else:
-                            file.write(f"drawCircle({x+0.5},{6},{rad});\n")
+                            file.write("drawCircle({x},6,{rad});\n".format(x=x+0.5+excess, rad=rad))
                     # If last hole        
-                    elif hole == num_of_holes-1:
+                    elif hole == hole_count-1:
                         if ((tube) % 2) == 0:
-                            file.write(f"drawCircle({x+1.5},{length-6},{rad});\n")
+                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+1.5+excess,location=length-6,rad=rad))
                         else:
-                            file.write(f"drawCircle({x+0.5},{length-6},{rad});\n")
+                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+0.5+excess,location=length-6,rad=rad))
                     # If middle Hole
-                    elif hole+1.5 == num_of_holes/2:
+                    elif hole+1.5 == hole_count/2:
                         if ((tube) % 2) == 0:
-                            file.write(f"drawCircle({x+1.5},{length/2},{rad});\n")
+                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+1.5+excess,location=length/2,rad=rad))
                         else:
-                            file.write(f"drawCircle({x+0.5},{length/2},{rad});\n")         
+                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+0.5+excess,location=length/2,rad=rad))         
                     # Any other hole
                     else:
                         if ((tube) % 2) == 0:
-                            file.write(f"drawCircle({x+1.5},{(length/(num_of_holes-1))*(hole)},{rad});\n")
+                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+1.5+excess,location=((length/(hole_count-1))*(hole)),rad=rad))
                         else:
-                            file.write(f"drawCircle({x+0.5},{(length/(num_of_holes-1))*(hole)},{rad});\n")   
+                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+0.5+excess,location=((length/(hole_count-1))*(hole)),rad=rad))   
                             
                 if width == 1:
                     # If first hole
                     if hole == 0: 
-                        file.write(f"drawCircle({x+.5},{4},{rad});\n")
+                        file.write("drawCircle({x},4,{rad});\n".format(x=x+.5+excess, rad=rad))
                     # If last hole        
-                    elif hole == num_of_holes-1:
-                        file.write(f"drawCircle({x+.5},{length-8},{rad});\n")
+                    elif hole == hole_count-1:
+                        file.write("drawCircle({x},{location},{rad});\n".format(x=x+.5+excess, location=length-8, rad=rad))
                     # If middle Hole
-                    elif hole+1.5 == num_of_holes/2:
-                        file.write(f"drawCircle({x+.5},{length/2-2},{rad});\n")     
+                    elif hole+1.5 == hole_count/2:
+                        file.write("drawCircle({x},{location},{rad});\n".format(x=x+.5+excess, location=length/2-2, rad=rad))     
                     # Any other hole
                     else:
-                        file.write(f"drawCircle({x+.5},{(length/(num_of_holes-1))*(hole)-2},{rad});\n") 
+                        file.write("drawCircle({x},{location},{rad});\n".format(x=x+.5+excess, location=((length/(hole_count-1))*(hole)-2), rad=rad)) 
             x = x + width
             
-
-
-    # Perimeter Function
-    def parameter_func(length,width,x,i):
-        file.write('setCurrentLayer("perimeter");\n')
-        while i > 0:
-            file.write(f"drawRectangle({width},{length},{x},0);\n")
-            x = x + float(width)
-            i-=1
-        return
-
 
 
     lengths = []
@@ -90,30 +96,26 @@ def sliders():
     refresh(2,lengths,[2,1],total_tubes,hole_rads,hole_count)
 
 
-    hole_count = []
-    # Ask how many holes per tube
-    num_of_holes = int(input("Amount of holes in the sliders: "))
-    hole_count.append(num_of_holes)
-    hole_count.append(num_of_holes)
-    refresh(2,lengths,[2,1],total_tubes,hole_rads,hole_count)
+    # Ask if we should Automatically set hole count based on length
+    auto_holes = yesno_func("Set # of holes automically?(Y/n): ")
+    if auto_holes ==  False:
+        hole_count = auto_holes_func(lengths)
+    else:
+        hole_count = [int(input("Amount of holes per tube: "))]
 
 
-    with open("box_maker.js","w") as file:
+
+    # Ask if we should offset 
+    if yesno_func("Automatically place tube perimeters?(Y/n): ") == True:
+        manual_mode = True
+    else:
+        manual_mode = False
+
+
+    with open("box_maker.js","a") as file:
         
         # Create Javascript parameter function (boxes)
-        file.write("function drawRectangle(width, height, x, y){\n \
-        addLine(x, y, x, y + height);\n \
-        addLine(x, y, x + width, y);\n \
-        addLine(x + width, y, x + width, y + height);\n \
-        addLine(x, y + height, x + width, y + height);\n}\n\n")
-
-        # Create Javascript circle function
-        file.write("function drawCircle(x,y,size){\n \
-        addCircle(x,y,size);\n}\n")
-
-        # Add layers
-        file.write('addLayer("Holes", "cyan", "CONTINUOUS", RLineweight.Weight025);\n')
-        file.write('addLayer("perimeter", "red", "DASHED", RLineweight.Weight025);\n\n')
+        constants()
 
 
         ##############################
@@ -123,13 +125,11 @@ def sliders():
     
 
         # Draw first set of tube
-        parameter_func(lengths[0],2,0,int(amnt_one_width/2))
-        holes_func(lengths[0],2,num_of_holes,0,int(amnt_one_width/2),0.625/2)
+        draw_func_slider(lengths[0],2,hole_count[0],0,int(amnt_one_width/2),0.625/2)
 
         x = 2.0 * int(amnt_one_width/2)
 
         # Draw second set of tube
-        parameter_func(lengths[1],1,x,int(amnt_one_width/2))
-        holes_func(lengths[0],1,num_of_holes,x,int(amnt_one_width/2),0.625/2)
+        draw_func_slider(lengths[1],1,hole_count[0],x,int(amnt_one_width/2),0.625/2)
 
         file.close

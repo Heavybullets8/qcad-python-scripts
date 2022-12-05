@@ -69,20 +69,10 @@ def general_tubes():
 
     # Ask if we should Automatically set hole count based on length
     auto_holes = yesno_func("Set # of holes automically?(Y/n): ")
-    hole_count = []
     if auto_holes ==  False:
-        for length in lengths:
-            if length < 108:
-                hole_count.append(2)
-            elif length < 168:
-                hole_count.append(3)
-            elif length < 216:
-                hole_count.append(4)
-            elif length < 228:
-                hole_count.append(5)
-            else: 
-                hole_count.append(6)
+        hole_count = auto_holes_func(lengths)
     else:
+        hole_count = []
         # Ask how many holes per tube
         if multi_number > 1:
             holes = []
@@ -111,6 +101,8 @@ def general_tubes():
         manual_mode = False
 
 
+
+
     # Place drawing constants
     constants()
 
@@ -119,10 +111,15 @@ def general_tubes():
     ###########Drawing############
     ##############################
     
+    
     count = 1
+    
+    for i in range(multi_number):
+        offset = dry_run_func(lengths[i],widths[i], hole_count[i], hole_rads[i]/2, count)
+    
     if multi_number == 1:
-        draw_func(lengths[0],widths[0],0,total_tubes[0],hole_count[0],hole_rads[0]/2,count,corners[0],manual_mode)
+        draw_func(lengths[0],widths[0],0,total_tubes[0],hole_count[0],hole_rads[0]/2,count,corners[0],manual_mode,offset)
     else:
         for i in range(multi_number):
-            x, count = draw_func(lengths[i],widths[i],x,total_tubes[i],hole_count[i],hole_rads[i]/2,count,corners[i],manual_mode)              
+            x, count = draw_func(lengths[i],widths[i],x,total_tubes[i],hole_count[i],hole_rads[i]/2,count,corners[i],manual_mode,offset)              
 

@@ -183,7 +183,6 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
 
 
 def auto_holes_func(lengths):
-    print("Input number", lengths)
     hole_count = []
     for length in lengths:
         if length < 108:
@@ -214,7 +213,6 @@ def dry_run_func(length,width,number,rad,tube_count):
     
     for hole in range(number):
         count+=1
-
             
         # Odd number of holes per tube
         if (number % 2) != 0:
@@ -253,7 +251,12 @@ def dry_run_func(length,width,number,rad,tube_count):
          
     y_offset = hole_check_func(hole_location, rad)
     
-    print(y_offset)
+    
+    if y_offset != 0:
+        print("The holes were offset, so that they are not touching the 4ft centers:\
+            \n43-49\n91-97\n139-145\n189-193\n235-241\
+            \nYou should double check that holes are not touching these numbers, and are spaced well..")
+        print("Current Offset:",y_offset)
         
     return y_offset
             
@@ -272,8 +275,6 @@ def hole_check_func(numbers,rad):
     while count != len(numbers):
         count = 0
         for number in numbers:
-            print(number)
-            print("first loop")
             
             if count < len(numbers)/2:
                 temp_offset = abs(neg_offset) 
@@ -302,10 +303,7 @@ def hole_check_func(numbers,rad):
     while count != len(numbers):
         count = 0
         for number in numbers:
-            print("second loop")
-            print("Lengths: ",len(numbers))
-            print("count: ", count)
-            
+
             if count < len(numbers)/2:
                 temp_offset = pos_offset * -1
             else:
@@ -328,8 +326,6 @@ def hole_check_func(numbers,rad):
                 count+=1
                  
              
-    print("Pos: ", pos_offset)
-    print("Neg: ", neg_offset)
     # Return whichever value is lowest, ensuring the least amount of deviation possible
     if abs(neg_offset) > abs(pos_offset):
         return pos_offset

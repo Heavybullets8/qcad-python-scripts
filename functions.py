@@ -247,9 +247,10 @@ def dry_run_func(length,width,number,rad,tube_count):
                     temp = abs(y_offset)
                                                         
                 hole_location.append((length/(number-1))*hole+temp)
-                    
-         
-    y_offset = hole_check_func(hole_location, rad)
+
+        
+    y_offset = hole_check_func(hole_location, rad)            
+
     
     
     if y_offset != 0:
@@ -288,7 +289,7 @@ def hole_check_func(numbers,rad):
                 189-(rad/2) <= number+temp_offset  <= 193+(rad/2) or \
                 235-(rad/2) <= number+temp_offset  <= 241+(rad/2):
                     # If 4 ft center collision occurs on the middle hole, exit
-                    if len(numbers) % 2 != 0 and count+0.5 == len(numbers):
+                    if len(numbers) % 2 != 0 and count+0.5 == len(numbers)/2:
                         print("Impossible to use an odd number for this length tube.. Exiting")
                         exit()
                     else:
@@ -316,7 +317,7 @@ def hole_check_func(numbers,rad):
                 189-(rad/2) <= number+temp_offset  <= 193+(rad/2) or \
                 235-(rad/2) <= number+temp_offset  <= 241+(rad/2):
                     # If 4 ft center collision occurs on the middle hole, exit
-                    if len(numbers) % 2 != 0 and count+0.5 == len(numbers):
+                    if len(numbers) % 2 != 0 and count+0.5 == len(numbers)/2:
                         print("Impossible to use an odd number for this length tube.. Exiting")
                         exit()
                     else:

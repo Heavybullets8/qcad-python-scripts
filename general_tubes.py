@@ -111,7 +111,7 @@ def general_tubes():
     ###########Drawing############
     ##############################
     
-    
+    refresh(multi_number,lengths,widths,total_tubes,hole_rads,hole_count)
     count = 1
     offset = []
     for i in range(multi_number):
@@ -123,3 +123,4 @@ def general_tubes():
         for i in range(multi_number):
             x, count = draw_func(lengths[i],widths[i],x,total_tubes[i],hole_count[i],hole_rads[i]/2,count,corners[i],manual_mode,offset[i])              
 
+    

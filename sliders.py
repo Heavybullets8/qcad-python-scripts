@@ -31,7 +31,10 @@ def sliders():
             if excess > prior_excess:
                 excess = excess - prior_excess
                 
-            file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length,x=x+excess))
+            if width == 1:
+                file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length-4,x=x+excess))
+            else:
+                file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length,x=x+excess))
 
             
             file.write('setCurrentLayer("Holes");\n')
@@ -130,6 +133,6 @@ def sliders():
         x = 2.0 * int(amnt_one_width/2)
 
         # Draw second set of tube
-        draw_func_slider(lengths[1],1,hole_count[0],x,int(amnt_one_width/2),0.625/2)
+        draw_func_slider(lengths[0],1,hole_count[0],x,int(amnt_one_width/2),0.625/2)
 
         file.close

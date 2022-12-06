@@ -265,6 +265,7 @@ def dry_run_func(length,width,number,rad,tube_count):
 def hole_check_func(numbers,rad):
     pos_offset = 0
     neg_offset = 0
+    temp_offset = 0
     finished = False
     
     count = 0
@@ -273,26 +274,25 @@ def hole_check_func(numbers,rad):
         for number in numbers:
             print(number)
             print("first loop")
+            
+            if count < len(numbers)/2:
+                temp_offset = abs(neg_offset) 
+            else:
+                temp_offset = neg_offset
+            
             # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
-            if 43-(rad/2) <= number+pos_offset <= 49+(rad/2):
-                pos_offset+=1
-                continue
-                
-            elif 91-(rad/2) <= number+pos_offset  <= 97+(rad/2):
-                pos_offset+=1
-                continue
-            
-            elif 139-(rad/2) <= number+pos_offset  <= 145+(rad/2):
-                pos_offset+=1
-                continue
-            
-            elif 189-(rad/2) <= number+pos_offset  <= 193+(rad/2):
-                pos_offset+=1
-                continue
-            
-            elif 235-(rad/2) <= number+pos_offset  <= 241+(rad/2):
-                pos_offset+=1
-                continue
+            if 43-(rad/2) <= number+temp_offset <= 49+(rad/2) or \
+                91-(rad/2) <= number+temp_offset  <= 97+(rad/2) or \
+                139-(rad/2) <= number+temp_offset  <= 145+(rad/2) or \
+                189-(rad/2) <= number+temp_offset  <= 193+(rad/2) or \
+                235-(rad/2) <= number+temp_offset  <= 241+(rad/2):
+                    # If 4 ft center collision occurs on the middle hole, exit
+                    if len(numbers) % 2 != 0 and count+0.5 == len(numbers):
+                        print("Impossible to use an odd number for this length tube.. Exiting")
+                        exit()
+                    else:
+                        neg_offset-=1
+                        continue
             else:
                 count+=1
 
@@ -305,26 +305,25 @@ def hole_check_func(numbers,rad):
             print("second loop")
             print("Lengths: ",len(numbers))
             print("count: ", count)
+            
+            if count < len(numbers)/2:
+                temp_offset = pos_offset * -1
+            else:
+                temp_offset = abs(pos_offset) 
+            
             # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
-            if 43-(rad/2) <= number+neg_offset <= 49+(rad/2):
-                neg_offset-=1
-                continue
-                
-            elif 91-(rad/2) <= number+neg_offset  <= 97+(rad/2):
-                neg_offset-=1
-                continue
-            
-            elif 139-(rad/2) <= number+neg_offset  <= 145+(rad/2):
-                neg_offset-=1
-                continue
-            
-            elif 189-(rad/2) <= number+neg_offset  <= 193+(rad/2):
-                neg_offset-=1
-                continue
-            
-            elif 235-(rad/2) <= number+neg_offset  <= 241+(rad/2):
-                neg_offset-=1
-                continue
+            if 43-(rad/2) <= number+temp_offset <= 49+(rad/2) or \
+                91-(rad/2) <= number+temp_offset  <= 97+(rad/2) or \
+                139-(rad/2) <= number+temp_offset  <= 145+(rad/2) or \
+                189-(rad/2) <= number+temp_offset  <= 193+(rad/2) or \
+                235-(rad/2) <= number+temp_offset  <= 241+(rad/2):
+                    # If 4 ft center collision occurs on the middle hole, exit
+                    if len(numbers) % 2 != 0 and count+0.5 == len(numbers):
+                        print("Impossible to use an odd number for this length tube.. Exiting")
+                        exit()
+                    else:
+                        pos_offset+=1
+                        continue
             else:
                 count+=1
                  

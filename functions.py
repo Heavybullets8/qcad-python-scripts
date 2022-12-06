@@ -117,10 +117,12 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                 
             file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length,x=x+excess))
 
+
             # Draw Holes
             count = 0
             floor = 1
             roof = 1
+            original_offset = y_offset
             file.write('setCurrentLayer("Holes");\n')
             for hole in range(number):
                 location = length/(number+1)
@@ -134,7 +136,9 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                 else:
                     current_width = x+(width/2)+excess
                     
-                # Even number of holes per tube
+                    
+                               
+                # Odd number of holes per tube
                 if (number % 2) != 0:
                     if hole == 0:
                         file.write("drawCircle({current_width},6,{rad});\n".format(current_width=current_width,rad=rad))
@@ -146,16 +150,23 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                         file.write("drawCircle({current_width},{length},{rad});\n".format(current_width=current_width,length=length/2,rad=rad))
                     # Lower half of the length
                     elif hole+1 < number/2:
-                        file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=(((length/2))/((number/2)-0.5)*floor)+y_offset,rad=rad))
+                        file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=(((length/2))/((number/2)-0.5)*floor-abs(y_offset)),rad=rad))
                         floor+=1
                     # Upper half of the length
                     elif count >= number/2:
-                        file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=((length/2))/((number/2)-0.5)*roof+length/2+y_offset,rad=rad))
+                        file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=((length/2))/((number/2)-0.5)*roof+length/2+abs(y_offset),rad=rad))
                         roof+=1
 
 
-                # Odd number of holes per tube
+                # Even number of holes per tube
                 else:
+                    if count >= number/2:
+                        y_offset = y_offset * -1
+                    else:
+                        y_offset = abs(y_offset)
+                    
+                    
+                    
                     if hole == 0:
                         file.write("drawCircle({current_width},6,{rad});\n".format(current_width=current_width,rad=rad))
                     # Last row of holes end up 6 inches from the top
@@ -172,6 +183,7 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
 
 
 def auto_holes_func(lengths):
+    print("Input number", lengths)
     hole_count = []
     for length in lengths:
         if length < 108:
@@ -190,15 +202,16 @@ def auto_holes_func(lengths):
 
 
 def dry_run_func(length,width,number,rad,tube_count):
-    print(length)
-    print(width)
-    print(number)
-    print(rad)
-    print(tube_count)
-    
-    
+    y_offset = 0
+    offsets = []
+    prev_offset = 0
+
     hole_location = []
     count = 0
+    floor = 1
+    roof = 1
+
+    
     for hole in range(number):
         count+=1
 
@@ -212,16 +225,17 @@ def dry_run_func(length,width,number,rad,tube_count):
             elif hole + .5 == number/2:
                 hole_location.append(length/2)
             elif hole+1 < number/2:
-                hole_location.append((length/2)/((number/2)-0.5)*floor)
+                hole_location.append((length/2)/((number/2)-0.5)*floor-abs(y_offset))
                 floor+=1
             # Upper half of the length
             elif count >= number/2:
-                hole_location.append((length/2)/((number/2)-0.5)*roof+length/2)
+                hole_location.append((length/2)/((number/2)-0.5)*roof+length/2+abs(y_offset))
                 roof+=1
 
 
         # Even number of holes per tube
         else:
+            
             if hole == 0:
                 hole_location.append(6)
             # Last row of holes end up 6 inches from the top
@@ -229,52 +243,100 @@ def dry_run_func(length,width,number,rad,tube_count):
                 hole_location.append(length-6)
             # Draw Holes
             else:
-                hole_location.append((length/(number-1))*hole)
-                
-    offsets = []            
-    for location in hole_location:
-        offsets.append(hole_check_func(location, rad))
-        print(offsets)
-
-
-    return max(offsets,key=abs)
-
-
-
-def hole_check_func(number,rad):
-    print("Input number" ,number)
-    # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
-    if 43-(rad/2) <= number <= 49+(rad/2):
-        if abs(43-(rad/2) - number) < abs(49+(rad/2) - number):
-            return 43 - number - 1
-        else:
-            return 49 - number + 1
+                if count >= number/2:
+                    temp = y_offset * -1
+                else:
+                    temp = abs(y_offset)
+                                                        
+                hole_location.append((length/(number-1))*hole+temp)
+                    
+         
+    y_offset = hole_check_func(hole_location, rad)
+    
+    print(y_offset)
         
-    elif 91-(rad/2) <= number <= 97+(rad/2):
-        if abs(91-(rad/2) - number) < abs(97+(rad/2) - number):
-            return 91 - number - 1
-        else:
-            return 97 - number + 1
+    return y_offset
+            
+ 
     
-    elif 139-(rad/2) <= number <= 145+(rad/2):
-        if abs(139-(rad/2) - number) < abs(145+(rad/2) - number):
-            return 139 - number - 1
-        else:
-            return 145 - number + 1
+
+
+
+def hole_check_func(numbers,rad):
+    pos_offset = 0
+    neg_offset = 0
+    finished = False
     
-    elif 189-(rad/2) <= number <= 193+(rad/2):
-        if abs(189-(rad/2) - number) < abs(193+(rad/2) - number):
-            return 189 - number - 1
-        else:
-            return 193 - number + 1
-    
-    elif 235-(rad/2) <= number <= 241+(rad/2):
-        if abs(235-(rad/2) - number) < abs(241+(rad/2) - number):
-            return 235 - number - 1
-        else:
-            return 241 - number + 1
-    
-    else:
-        return 0
+    count = 0
+    while count != len(numbers):
+        count = 0
+        for number in numbers:
+            print(number)
+            print("first loop")
+            # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
+            if 43-(rad/2) <= number+pos_offset <= 49+(rad/2):
+                pos_offset+=1
+                continue
+                
+            elif 91-(rad/2) <= number+pos_offset  <= 97+(rad/2):
+                pos_offset+=1
+                continue
+            
+            elif 139-(rad/2) <= number+pos_offset  <= 145+(rad/2):
+                pos_offset+=1
+                continue
+            
+            elif 189-(rad/2) <= number+pos_offset  <= 193+(rad/2):
+                pos_offset+=1
+                continue
+            
+            elif 235-(rad/2) <= number+pos_offset  <= 241+(rad/2):
+                pos_offset+=1
+                continue
+            else:
+                count+=1
+
+            
+
+    count = 0
+    while count != len(numbers):
+        count = 0
+        for number in numbers:
+            print("second loop")
+            print("Lengths: ",len(numbers))
+            print("count: ", count)
+            # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
+            if 43-(rad/2) <= number+neg_offset <= 49+(rad/2):
+                neg_offset-=1
+                continue
+                
+            elif 91-(rad/2) <= number+neg_offset  <= 97+(rad/2):
+                neg_offset-=1
+                continue
+            
+            elif 139-(rad/2) <= number+neg_offset  <= 145+(rad/2):
+                neg_offset-=1
+                continue
+            
+            elif 189-(rad/2) <= number+neg_offset  <= 193+(rad/2):
+                neg_offset-=1
+                continue
+            
+            elif 235-(rad/2) <= number+neg_offset  <= 241+(rad/2):
+                neg_offset-=1
+                continue
+            else:
+                count+=1
+                 
              
-    
+    print("Pos: ", pos_offset)
+    print("Neg: ", neg_offset)
+    # Return whichever value is lowest, ensuring the least amount of deviation possible
+    if abs(neg_offset) > abs(pos_offset):
+        return pos_offset
+    else:
+        return neg_offset
+        
+        
+        
+        

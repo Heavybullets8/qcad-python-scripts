@@ -22,14 +22,17 @@ def sliders():
             file.write('setCurrentLayer("Perimeter");\n')
             if manual_mode == True:
                 excess = convert_to_float(input("What is the excess (to the left) of tube {tube_count}?: ".format(tube_count=tube+1+count)))
+                if excess == None:
+                    excess = prior_excess
                 
-            # If there was no change, do not add the excess
-            if excess == prior_excess:
-                excess = 0
+                # If there was no change, do not add the excess
+                if excess == prior_excess:
+                    excess = 0
 
-            # Remove excess from the previous exess, avoiding doubling up widths
-            if excess > prior_excess:
-                excess = excess - prior_excess
+                # Remove excess from the previous exess, avoiding doubling up widths
+                if excess > prior_excess:
+                    excess = excess - prior_excess
+                    prior_excess = excess
                 
             if width == 1:
                 file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length-4,x=x+excess))
@@ -39,45 +42,31 @@ def sliders():
             
             file.write('setCurrentLayer("Holes");\n')
             for hole in range(hole_count):
-                if width == 2:
-                    # If first hole
-                    if hole == 0: 
-                        if ((tube) % 2) == 0:
-                            file.write("drawCircle({x},6,{rad});\n".format(x=x+1.5+excess, rad=rad))
-                        else:
-                            file.write("drawCircle({x},6,{rad});\n".format(x=x+0.5+excess, rad=rad))
-                    # If last hole        
-                    elif hole == hole_count-1:
-                        if ((tube) % 2) == 0:
-                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+1.5+excess,location=length-6,rad=rad))
-                        else:
-                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+0.5+excess,location=length-6,rad=rad))
-                    # If middle Hole
-                    elif hole+1.5 == hole_count/2:
-                        if ((tube) % 2) == 0:
-                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+1.5+excess,location=length/2,rad=rad))
-                        else:
-                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+0.5+excess,location=length/2,rad=rad))         
-                    # Any other hole
-                    else:
-                        if ((tube) % 2) == 0:
-                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+1.5+excess,location=((length/(hole_count-1))*(hole)),rad=rad))
-                        else:
-                            file.write("drawCircle({x},{location},{rad});\n".format(x=x+0.5+excess,location=((length/(hole_count-1))*(hole)),rad=rad))   
-                            
+
+                # If first hole
+                if hole == 0: 
+                    math = 6
+                # If last hole        
+                elif hole == hole_count-1:
+                    math = length-6
+                # If middle Hole
+                elif hole+1.5 == hole_count/2:
+                    math = length/2
+    
+                # Any other hole
+                else:
+                    math = (length/(hole_count-1))*(hole)
+                                    
+                # Minus 2 from each 1 inch width slider
                 if width == 1:
-                    # If first hole
-                    if hole == 0: 
-                        file.write("drawCircle({x},4,{rad});\n".format(x=x+.5+excess, rad=rad))
-                    # If last hole        
-                    elif hole == hole_count-1:
-                        file.write("drawCircle({x},{location},{rad});\n".format(x=x+.5+excess, location=length-8, rad=rad))
-                    # If middle Hole
-                    elif hole+1.5 == hole_count/2:
-                        file.write("drawCircle({x},{location},{rad});\n".format(x=x+.5+excess, location=length/2-2, rad=rad))     
-                    # Any other hole
-                    else:
-                        file.write("drawCircle({x},{location},{rad});\n".format(x=x+.5+excess, location=((length/(hole_count-1))*(hole)-2), rad=rad)) 
+                    math = math - 2
+                
+                # if even number tube and width is 2, add 1.5
+                if ((tube) % 2) == 0 and width == 2:
+                    file.write("drawCircle({x},{math},{rad});\n".format(x=x+1.5+excess, math=math, rad=rad))
+                else:
+                     file.write("drawCircle({x},{math},{rad});\n".format(x=x+0.5+excess, math=math, rad=rad))
+            
             x = x + width + excess
         return x
 

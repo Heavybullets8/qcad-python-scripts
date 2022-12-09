@@ -127,58 +127,61 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
             floor = 1
             roof = 1
             original_offset = y_offset
-            file.write('setCurrentLayer("Holes");\n')
             for hole in range(number):
                 location = length/(number+1)
                 count+=1
                 # If hole location exceeds plasma table length, set a different layer thats ignored in sheetcam
-                if location*count > 118:
-                    file.write('setCurrentLayer("Holes_Ref");\n')
                 
                 if corners == True:
                     current_width = x+1+excess
                 else:
                     current_width = x+(width/2)+excess
                     
-                    
                                
                 # Odd number of holes per tube
                 if (number % 2) != 0:
                     if hole == 0:
-                        file.write("drawCircle({current_width},6,{rad});\n".format(current_width=current_width,rad=rad))
+                        math = 6
                     # Last row of holes end up 6 inches from the top
                     elif hole == number-1:
-                        file.write("drawCircle({current_width},{length},{rad});\n".format(current_width=current_width,length=length-6,rad=rad))
+                        math = length-6
                     # Middle of the tube
                     elif hole + .5 == number/2:
-                        file.write("drawCircle({current_width},{length},{rad});\n".format(current_width=current_width,length=length/2,rad=rad))
+                        math = length/2
                     # Lower half of the length
                     elif hole+1 < number/2:
-                        file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=(((length/2))/((number/2)-0.5)*floor-abs(y_offset)),rad=rad))
+                        math = (((length/2))/((number/2)-0.5)*floor-abs(y_offset))
                         floor+=1
                     # Upper half of the length
                     elif count >= number/2:
-                        file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=((length/2))/((number/2)-0.5)*roof+length/2+abs(y_offset),rad=rad))
+                        math = ((length/2))/((number/2)-0.5)*roof+length/2+abs(y_offset)
                         roof+=1
-
-
+                    
+                    
                 # Even number of holes per tube
                 else:
+                    # Change offset to positive or negative depending on the side of the tube they are on
                     if count >= number/2:
                         y_offset = y_offset * -1
                     else:
                         y_offset = abs(y_offset)
                     
-                    
-                    
                     if hole == 0:
-                        file.write("drawCircle({current_width},6,{rad});\n".format(current_width=current_width,rad=rad))
+                        math = 6
                     # Last row of holes end up 6 inches from the top
                     elif hole == number-1:
-                        file.write("drawCircle({current_width},{length},{rad});\n".format(current_width=current_width,length=length-6,rad=rad))
-                    # Draw Holes
+                        math = length-6
+                    # Draw Holes between the two 6 inch hard coded holes
                     else:
-                        file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=((length)/(number-1))*hole+y_offset,rad=rad))
+                        math = ((length)/(number-1))*hole+y_offset
+                
+                # If target hole exceeds limits of plasma table, mark them for reference, so theyre not cut out
+                if math > 118:
+                    file.write('setCurrentLayer("Holes_Ref");\n')
+                else:
+                    file.write('setCurrentLayer("Holes");\n')
+                
+                file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=math,rad=rad))
 
             tube_count+=1
             x = x + float(width) + excess

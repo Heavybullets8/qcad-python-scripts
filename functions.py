@@ -105,7 +105,9 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
             # Draw Rectangle
             file.write('setCurrentLayer("Perimeter");\n')
             if manual_mode == True:
-                excess = convert_to_float(input("What is the excess of tube {tube_count}?: ".format(tube_count=tube_count)))
+                excess = convert_to_float(input("What is the excess (to the left) of tube {tube_count}?: ".format(tube_count=tube_count)))
+                if excess == None:
+                    excess = prior_excess
                 
                 # If there was no change, do not add the excess
                 if excess == prior_excess:
@@ -114,6 +116,8 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                 # Remove excess from the previous exess, avoiding doubling up widths
                 if excess > prior_excess:
                     excess = excess - prior_excess
+                    prior_excess = excess
+                
                 
             file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length,x=x+excess))
 
@@ -177,7 +181,7 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                         file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=((length)/(number-1))*hole+y_offset,rad=rad))
 
             tube_count+=1
-            x = x + float(width)
+            x = x + float(width) + excess
     return x, count
 
 
@@ -253,11 +257,7 @@ def dry_run_func(length,width,number,rad,tube_count):
 
     
     
-    if y_offset != 0:
-        print("\nThe holes were offset, so that they are not touching the 4ft centers:\
-            \n43-49\n91-97\n139-145\n189-193\n235-241\
-            \nYou should double check that holes are not touching these numbers, and are spaced well..")
-        print("Current Offset:",y_offset)
+
         
     return y_offset
             

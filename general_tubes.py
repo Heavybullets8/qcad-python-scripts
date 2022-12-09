@@ -123,4 +123,9 @@ def general_tubes():
         for i in range(multi_number):
             x, count = draw_func(lengths[i],widths[i],x,total_tubes[i],hole_count[i],hole_rads[i]/2,count,corners[i],manual_mode,offset[i])              
 
-    
+
+    if offset != 0:
+        print("\nThe holes were offset, so that they are not touching the 4ft centers:\
+            \n43-49\n91-97\n139-145\n189-193\n235-241\
+            \nYou should double check that holes are not touching these numbers, and are spaced well..")
+        print("Current Offset:",offset)

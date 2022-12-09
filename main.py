@@ -22,4 +22,4 @@ while tube_type not in [1,2,3]:
         print("Error: {tube_type} was not an option, try again..".format(tube_type=tube_type))
 
 
-os.system('qcad -exec {pwd}/box_maker.js &>/dev/null'.format(pwd=os.getcwd()))
+os.system('qcad -exec {pwd}/box_maker.js 1>/dev/null'.format(pwd=os.getcwd()))

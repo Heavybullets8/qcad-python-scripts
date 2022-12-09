@@ -256,7 +256,11 @@ def dry_run_func(length,width,number,rad,tube_count):
     y_offset = hole_check_func(hole_location, rad)            
 
     
-    
+    if y_offset != 0:
+        print("\nThe holes were offset, so that they are not touching the 4ft centers:\
+            \n43-49\n91-97\n139-145\n189-193\n235-241\
+            \nYou should double check that holes are not touching these numbers, and are spaced well..")
+        print("Current Offset:",y_offset)
 
         
     return y_offset

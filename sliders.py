@@ -13,7 +13,7 @@ def sliders():
 
 
     # Holes Function
-    def draw_func_slider(length,width,hole_count,x,num_of_tubes,rad):
+    def draw_func_slider(length,width,hole_count,x,num_of_tubes,rad,count):
         excess = 0
         prior_excess = 0
         for tube in range(num_of_tubes):
@@ -21,7 +21,7 @@ def sliders():
             # Draw Rectangle
             file.write('setCurrentLayer("Perimeter");\n')
             if manual_mode == True:
-                excess = convert_to_float(input("What is the excess of tube {tube_count}?: ".format(tube_count=tube+1)))
+                excess = convert_to_float(input("What is the excess (to the left) of tube {tube_count}?: ".format(tube_count=tube+1+count)))
                 
             # If there was no change, do not add the excess
             if excess == prior_excess:
@@ -79,7 +79,7 @@ def sliders():
                     else:
                         file.write("drawCircle({x},{location},{rad});\n".format(x=x+.5+excess, location=((length/(hole_count-1))*(hole)-2), rad=rad)) 
             x = x + width + excess
-            
+        return x
 
 
     lengths = []
@@ -128,11 +128,10 @@ def sliders():
     
 
         # Draw first set of tube
-        draw_func_slider(lengths[0],2,hole_count[0],0,int(amnt_one_width/2),0.625/2)
+        x = draw_func_slider(lengths[0],2,hole_count[0],0,int(amnt_one_width/2),0.625/2,0)
 
-        x = 2.0 * int(amnt_one_width/2)
 
         # Draw second set of tube
-        draw_func_slider(lengths[0],1,hole_count[0],x,int(amnt_one_width/2),0.625/2)
+        draw_func_slider(lengths[0],1,hole_count[0],x,int(amnt_one_width/2),0.625/2,int(amnt_one_width/2))
 
         file.close

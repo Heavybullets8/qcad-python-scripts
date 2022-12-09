@@ -22,8 +22,8 @@ while tube_type not in [1,2,3]:
         print("Error: {tube_type} was not an option, try again..".format(tube_type=tube_type))
 
 
-os.system('qcad -exec {pwd}/box_maker.js 1>/dev/null'.format(pwd=os.getcwd()))
+os.system('qcad -exec {pwd}/box_maker.js'.format(pwd=os.getcwd()))
 
 # Plasma Table Qcad 
-# os.system('/home/plasma/opt/qcad-3.27.8-trial-linux-x86_32/qcad -exec {pwd}/box_maker.js 1>/dev/null'.format(pwd=os.getcwd()))
+# os.system('/home/plasma/opt/qcad-3.27.8-trial-linux-x86_32/qcad -exec {pwd}/box_maker.js'.format(pwd=os.getcwd()))
 

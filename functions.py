@@ -1,6 +1,5 @@
 from functions import *
 import os
-from tabulate import tabulate
 
 
 def convert_to_float(frac_str):
@@ -223,10 +222,8 @@ def dry_run_func(length,width,number,rad,tube_count):
             
         # Odd number of holes per tube
         if (number % 2) != 0:
-            if hole == 0:
-                hole_location.append(6)
-            elif hole == number-1:
-                hole_location.append(length-6)
+            if hole == 0 or hole == number-1:
+                continue
             elif hole + .5 == number/2:
                 hole_location.append(length/2)
             elif hole+1 < number/2:
@@ -241,11 +238,8 @@ def dry_run_func(length,width,number,rad,tube_count):
         # Even number of holes per tube
         else:
             
-            if hole == 0:
-                hole_location.append(6)
-            # Last row of holes end up 6 inches from the top
-            elif hole == number-1:
-                hole_location.append(length-6)
+            if hole == 0 or hole == number-1:
+                continue
             # Draw Holes
             else:
                 if count >= number/2:
@@ -282,7 +276,7 @@ def hole_check_func(numbers,rad):
     count = 0
     while count != len(numbers):
         count = 0
-        for number in numbers:
+        for number in numbers:            
             
             if count < len(numbers)/2:
                 temp_offset = abs(neg_offset) 

@@ -78,7 +78,7 @@ def sliders():
                     # Any other hole
                     else:
                         file.write("drawCircle({x},{location},{rad});\n".format(x=x+.5+excess, location=((length/(hole_count-1))*(hole)-2), rad=rad)) 
-            x = x + width
+            x = x + width + excess
             
 
 

@@ -23,3 +23,7 @@ while tube_type not in [1,2,3]:
 
 
 os.system('qcad -exec {pwd}/box_maker.js 1>/dev/null'.format(pwd=os.getcwd()))
+
+# Plasma Table Qcad 
+# os.system('/home/plasma/opt/qcad-3.27.8-trial-linux-x86_32/qcad -exec {pwd}/box_maker.js 1>/dev/null'.format(pwd=os.getcwd()))
+

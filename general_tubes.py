@@ -2,7 +2,6 @@ from functions import *
 import os
 
 def general_tubes():
-    import os
     x = 0
     count = 0
     lengths = "x"

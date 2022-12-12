@@ -2,14 +2,11 @@ from functions import *
 import os
 
 def sliders():
-    count = 0
     lengths = "x"
     total_tubes = "x"
     hole_count = "x"
     hole_rads = [0.625,0.625]
-    multi_hole_rad = False
-    multi_width = False
-    multi_length = False
+
 
 
     # Holes Function

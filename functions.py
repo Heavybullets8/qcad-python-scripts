@@ -125,9 +125,7 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
             count = 0
             floor = 1
             roof = 1
-            original_offset = y_offset
             for hole in range(number):
-                location = length/(number+1)
                 count+=1
                 # If hole location exceeds plasma table length, set a different layer thats ignored in sheetcam
                 
@@ -206,11 +204,8 @@ def auto_holes_func(lengths):
 
 
 
-def dry_run_func(length,width,number,rad,tube_count):
+def dry_run_func(length,number,rad):
     y_offset = 0
-    offsets = []
-    prev_offset = 0
-
     hole_location = []
     count = 0
     floor = 1
@@ -271,8 +266,7 @@ def hole_check_func(numbers,rad):
     pos_offset = 0
     neg_offset = 0
     temp_offset = 0
-    finished = False
-    
+
     count = 0
     while count != len(numbers):
         count = 0

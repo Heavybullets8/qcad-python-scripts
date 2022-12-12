@@ -120,4 +120,3 @@ def sliders():
         # Draw second set of tube
         draw_func_slider(lengths[0],1,hole_count[0],x,int(amnt_one_width/2),0.625/2,int(amnt_one_width/2))
 
-        file.close

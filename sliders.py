@@ -37,7 +37,6 @@ def sliders():
                 file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length,x=x+excess))
 
             
-            file.write('setCurrentLayer("Holes");\n')
             for hole in range(hole_count):
 
                 # If first hole
@@ -58,6 +57,12 @@ def sliders():
                 if width == 1:
                     math = math - 2
                 
+                # If target hole exceeds limits of plasma table, mark them for reference, so theyre not cut out
+                if math > 118:
+                    file.write('setCurrentLayer("Holes_Ref");\n')
+                else:
+                    file.write('setCurrentLayer("Holes");\n')
+
                 # if even number tube and width is 2, add 1.5
                 if ((tube) % 2) == 0 and width == 2:
                     file.write("drawCircle({x},{math},{rad});\n".format(x=x+1.5+excess, math=math, rad=rad))

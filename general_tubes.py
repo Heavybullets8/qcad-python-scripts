@@ -74,7 +74,6 @@ def general_tubes():
         hole_count = []
         # Ask how many holes per tube
         if multi_number > 1:
-            holes = []
             for i in range(multi_number):
                 temp = int_check(input("Amount of holes for tube #{i}: ".format(i=i+1)))
                 hole_count.append(temp)

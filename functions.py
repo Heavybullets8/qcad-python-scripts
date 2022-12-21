@@ -40,15 +40,6 @@ def int_check(user_input):
             user_input = input("Input: ")
 
 
-# Float Check
-def float_check(user_input):
-    while True:
-        try:
-            return float(user_input)
-        except ValueError:
-            print("Invalid input, please try again..")
-            user_input = input("Input: ")
-
 
 
 #refresh table

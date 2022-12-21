@@ -75,7 +75,7 @@ def sliders():
 
     lengths = []
     # Grab the length(s) of the sliders
-    temp = convert_to_float(input("Length of tube: "))
+    temp = convert_to_float(input("Length of 2x2: "))
     temp1 = temp - 4
     lengths.append(temp)
     lengths.append(temp1)
@@ -84,9 +84,12 @@ def sliders():
 
     # Ask how many tubes there are
     total_tubes = []
-    amnt_one_width = int(input("How many tubes are there in total?: "))
-    total_tubes.append(amnt_one_width/2)
-    total_tubes.append(amnt_one_width/2)
+
+    amnt_one_width = int_check(input("How many 2x2 are there?: "))
+    amnt_two_width = int_check(input("How many 1x2 are there?: "))
+
+    total_tubes.append(amnt_one_width)
+    total_tubes.append(amnt_two_width)
     refresh(2,lengths,[2,1],total_tubes,hole_rads,hole_count)
 
 
@@ -95,7 +98,7 @@ def sliders():
     if auto_holes ==  False:
         hole_count = auto_holes_func(lengths)
     else:
-        hole_count = [int(input("Amount of holes per tube: "))]
+        hole_count = [int_check(input("Amount of holes per tube: "))]
 
 
 
@@ -105,6 +108,7 @@ def sliders():
     else:
         manual_mode = False
 
+    refresh(2,lengths,[2,1],total_tubes,hole_rads,hole_count)
 
     with open("box_maker.js","a") as file:
         
@@ -116,12 +120,11 @@ def sliders():
         ###########Drawing############
         ##############################
 
-    
 
         # Draw first set of tube
-        x = draw_func_slider(lengths[0],2,hole_count[0],0,int(amnt_one_width/2),0.625/2,0)
+        x = draw_func_slider(lengths[0],2,hole_count[0],0,amnt_one_width,0.625/2,0)
 
 
         # Draw second set of tube
-        draw_func_slider(lengths[0],1,hole_count[0],x,int(amnt_one_width/2),0.625/2,int(amnt_one_width/2))
+        draw_func_slider(lengths[0],1,hole_count[0],x,amnt_two_width,0.625/2,amnt_two_width)
 

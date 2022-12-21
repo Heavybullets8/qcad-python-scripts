@@ -3,28 +3,52 @@ import os
 
 
 def convert_to_float(frac_str):
-    if "\'" in frac_str:
-        temp = frac_str.replace("\'", '')
-        return int(temp) * 12
-    elif "\"" in frac_str:
-        frac_str = frac_str.replace("\"", '')
-    
-    try:
-        return float(frac_str)
-    except ValueError:
+    while True:
+        if "\'" in frac_str:
+            temp = frac_str.replace("\'", '')
+            return int(temp) * 12
+        elif "\"" in frac_str:
+            frac_str = frac_str.replace("\"", '')
+        
         try:
-            num, denom = frac_str.split('/')
+            return float(frac_str)
         except ValueError:
-            return None
+            try:
+                num, denom = frac_str.split('/')
+            except ValueError:
+                print("Invalid input, please try again..")
+                frac_str = input("Input: ")
+                continue
+            try:
+                leading, num = num.split(' ')
+            except ValueError:
+                return float(num) / float(denom)        
+            if float(leading) < 0:
+                sign_mult = -1
+            else:
+                sign_mult = 1
+            return float(leading) + sign_mult * (float(num) / float(denom))
+
+
+# Int Check
+def int_check(user_input):
+    while True:
         try:
-            leading, num = num.split(' ')
+            return int(user_input)
         except ValueError:
-            return float(num) / float(denom)        
-        if float(leading) < 0:
-            sign_mult = -1
-        else:
-            sign_mult = 1
-        return float(leading) + sign_mult * (float(num) / float(denom))
+            print("Please type a whole number..")
+            user_input = input("Input: ")
+
+
+# Float Check
+def float_check(user_input):
+    while True:
+        try:
+            return float(user_input)
+        except ValueError:
+            print("Invalid input, please try again..")
+            user_input = input("Input: ")
+
 
 
 #refresh table

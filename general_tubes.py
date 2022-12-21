@@ -13,7 +13,7 @@ def general_tubes():
     os.system('clear -x')
     # Ask how many different types of tubes there are
     print("Note - Differences in tube is any change in width, or length of a tube")
-    multi_number = int(input("How many different type of tube is there?: "))   
+    multi_number = int_check(input("How many different type of tube is there?: "))   
     refresh(multi_number,lengths,widths,total_tubes,hole_rads,hole_count)
 
 
@@ -44,7 +44,7 @@ def general_tubes():
     total_tubes = []
     # Ask how many tubes there are
     for i in range(multi_number):
-        temp = int(input("Number of tubes for #{i}: ".format(i=i+1)))
+        temp = int_check(input("Number of tubes for #{i}: ".format(i=i+1)))
         total_tubes.append(temp)
     refresh(multi_number,lengths,widths,total_tubes,hole_rads,hole_count)
     
@@ -76,11 +76,12 @@ def general_tubes():
         if multi_number > 1:
             holes = []
             for i in range(multi_number):
-                temp = int(input("Amount of holes for tube #{i}: ".format(i=i+1)))
+                temp = int_check(input("Amount of holes for tube #{i}: ".format(i=i+1)))
                 hole_count.append(temp)
         else:
-            hole_count = [int(input("Amount of holes per tube: "))]
+            hole_count = [int_check(input("Amount of holes per tube: "))]
         refresh(multi_number,lengths,widths,total_tubes,hole_rads,hole_count)
+
 
 
     corners = []

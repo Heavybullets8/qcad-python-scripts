@@ -1,5 +1,4 @@
 from functions import *
-import os
 
 def sliders():
     lengths = "x"

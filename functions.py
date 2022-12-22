@@ -1,4 +1,3 @@
-from functions import *
 import os
 
 
@@ -16,7 +15,8 @@ def convert_to_float(frac_str):
             try:
                 num, denom = frac_str.split('/')
             except ValueError:
-                print("Invalid input, please try again..")
+                print("Invalid input, please enter a whole number, mixed number, fraction, or decimal..")
+                print("Example: 1 1/2, 1/2, 1.5, 1, 1 1/2\" (inches), 1 1/2\' (feet)")
                 frac_str = input("Input: ")
                 continue
             try:

@@ -1,33 +1,39 @@
 import os
+import re
 
 
 def convert_to_float(frac_str):
     while True:
+        # Check for inches or feet
         if "\'" in frac_str:
-            temp = frac_str.replace("\'", '')
-            return int(temp) * 12
+            return int(frac_str.replace("\'", '')) * 12
         elif "\"" in frac_str:
-            frac_str = frac_str.replace("\"", '')
+            return int(frac_str.replace("\"", ''))
         
+        # Check for mixed numbers
+        mixed_number_pattern = r"(-?\d+)\s(-?\d+)/(-?\d+)"
+        mixed_number_match = re.fullmatch(mixed_number_pattern, frac_str)
+        if mixed_number_match:
+            whole, num, denom = map(int, mixed_number_match.groups())
+            return whole + num / denom
+        
+        # Check for fractions
+        fraction_pattern = r"(-?\d+)/(-?\d+)"
+        fraction_match = re.fullmatch(fraction_pattern, frac_str)
+        if fraction_match:
+            num, denom = map(int, fraction_match.groups())
+            return num / denom
+        
+        # Try to parse as float or integer
         try:
             return float(frac_str)
         except ValueError:
             try:
-                num, denom = frac_str.split('/')
+                return int(frac_str)
             except ValueError:
-                print("Invalid input, please enter a whole number, mixed number, fraction, or decimal..")
-                print("Example: 1 1/2, 1/2, 1.5, 1, 1 1/2\" (inches), 1 1/2\' (feet)")
-                frac_str = input("Input: ")
+                frac_str = input("Invalid input, please enter a whole number, mixed number, fraction, or decimal: ")
                 continue
-            try:
-                leading, num = num.split(' ')
-            except ValueError:
-                return float(num) / float(denom)        
-            if float(leading) < 0:
-                sign_mult = -1
-            else:
-                sign_mult = 1
-            return float(leading) + sign_mult * (float(num) / float(denom))
+
 
 
 # Int Check
@@ -42,47 +48,44 @@ def int_check(user_input):
 
 
 
-#refresh table
-def refresh(multi_number,lengths,widths,total_tubes,hole_rads,hole_count):
+def refresh(multi_number, lengths, widths, total_tubes, hole_rads, hole_count):
     os.system('clear -x')
-    
+
     for i in range(multi_number):
-        print("Tube      {i}".format(i=i+1))
+        print("Tube      {}".format(i + 1))
         
-        if type(lengths) == str:
+        if isinstance(lengths, list):
+            print("Length:   {}".format(lengths[i]))
+        else:
             print("Length:   x")
-        else:
-            print("Length:   {length}".format(length=lengths[i]))
         
-        if type(widths) == str:
+        if isinstance(widths, list):
+            print("Width:    {}".format(widths[i]))
+        else:
             print("Width:    x")
-        else:    
-            print("Width:    {width}".format(width=widths[i]))
-            
-        if type(total_tubes) == str:
+        
+        if isinstance(total_tubes, list):
+            print("Tubes:    {}".format(total_tubes[i]))
+        else:
             print("Tubes:    x")
+        
+        if isinstance(hole_rads, list):
+            print("Diameter: {}".format(hole_rads[i]))
         else:
-            print("Tubes:    {total_tubes}".format(total_tubes=total_tubes[i]))
-    
-        if type(hole_rads) == str:
             print("Diameter: x")
+        
+        if isinstance(hole_count, list):
+            print("Holes:    {}\n".format(hole_count[i]))
         else:
-            print("Diameter: {hole_rad}".format(hole_rad=hole_rads[i]))
-
-        if type(hole_count) == str:
             print("Holes:    x\n")
-        else:
-            print("Holes:    {hole_count}\n".format(hole_count=hole_count[i]))
 
 
-# User Input Yes or No Function
 def yesno_func(user_input):
-    yesno = ""
-    while yesno not in ["y","Y","n","N"]:
-        yesno = input(user_input)
-        if yesno in ["y","Y"]:
+    while True:
+        response = input(user_input).lower()
+        if response == 'y':
             return False
-        elif yesno in ["n","N"]:
+        elif response == 'n':
             return True
         else:
             print("Invalid input, please try again..")
@@ -205,15 +208,16 @@ def auto_holes_func(lengths):
     hole_count = []
     for length in lengths:
         if length < 108:
-            hole_count.append(2)
+            holes = 2
         elif length < 168:
-            hole_count.append(3)
+            holes = 3
         elif length < 216:
-            hole_count.append(4)
+            holes = 4
         elif length < 230:
-            hole_count.append(5)
-        else: 
-            hole_count.append(6)
+            holes = 5
+        else:
+            holes = 6
+        hole_count.append(holes)
     return hole_count
 
 
@@ -276,67 +280,50 @@ def dry_run_func(length,number,rad):
     
 
 
+def hole_check_func(numbers, rad):
+    def check_collision(number, offset):
+        # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
+        if 43 - (rad / 2) <= number + offset <= 49 + (rad / 2) or \
+           91 - (rad / 2) <= number + offset <= 97 + (rad / 2) or \
+           139 - (rad / 2) <= number + offset <= 145 + (rad / 2) or \
+           189 - (rad / 2) <= number + offset <= 193 + (rad / 2) or \
+           235 - (rad / 2) <= number + offset <= 241 + (rad / 2):
+            # If 4 ft center collision occurs on the middle hole, exit
+            if len(numbers) % 2 != 0 and count + 0.5 == len(numbers) / 2:
+                print("Impossible to use an odd number for this length tube.. Exiting")
+                exit()
+            else:
+                return True
+        return False
 
-def hole_check_func(numbers,rad):
-    pos_offset = 0
     neg_offset = 0
-    temp_offset = 0
-
-    count = 0
-    while count != len(numbers):
+    pos_offset = 0
+    while True:
         count = 0
-        for number in numbers:            
-            
-            if count < len(numbers)/2:
-                temp_offset = abs(neg_offset) 
+        for i, number in enumerate(numbers):
+            if i < len(numbers) / 2:
+                temp_offset = abs(neg_offset)
             else:
                 temp_offset = neg_offset
-            
-            # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
-            if 43-(rad/2) <= number+temp_offset <= 49+(rad/2) or \
-                91-(rad/2) <= number+temp_offset  <= 97+(rad/2) or \
-                139-(rad/2) <= number+temp_offset  <= 145+(rad/2) or \
-                189-(rad/2) <= number+temp_offset  <= 193+(rad/2) or \
-                235-(rad/2) <= number+temp_offset  <= 241+(rad/2):
-                    # If 4 ft center collision occurs on the middle hole, exit
-                    if len(numbers) % 2 != 0 and count+0.5 == len(numbers)/2:
-                        print("Impossible to use an odd number for this length tube.. Exiting")
-                        exit()
-                    else:
-                        neg_offset-=1
-                        continue
-            else:
-                count+=1
+            if not check_collision(number, temp_offset):
+                count += 1
+        if count == len(numbers):
+            break
+        neg_offset -= 1
 
-            
-
-    count = 0
-    while count != len(numbers):
+    while True:
         count = 0
-        for number in numbers:
-
-            if count < len(numbers)/2:
+        for i, number in enumerate(numbers):
+            if i < len(numbers) / 2:
                 temp_offset = pos_offset * -1
             else:
-                temp_offset = abs(pos_offset) 
-            
-            # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
-            if 43-(rad/2) <= number+temp_offset <= 49+(rad/2) or \
-                91-(rad/2) <= number+temp_offset  <= 97+(rad/2) or \
-                139-(rad/2) <= number+temp_offset  <= 145+(rad/2) or \
-                189-(rad/2) <= number+temp_offset  <= 193+(rad/2) or \
-                235-(rad/2) <= number+temp_offset  <= 241+(rad/2):
-                    # If 4 ft center collision occurs on the middle hole, exit
-                    if len(numbers) % 2 != 0 and count+0.5 == len(numbers)/2:
-                        print("Impossible to use an odd number for this length tube.. Exiting")
-                        exit()
-                    else:
-                        pos_offset+=1
-                        continue
-            else:
-                count+=1
-                 
-             
+                temp_offset = abs(pos_offset)
+            if not check_collision(number, temp_offset):
+                count += 1
+        if count == len(numbers):
+            break
+        pos_offset += 1
+        
     # Return whichever value is lowest, ensuring the least amount of deviation possible
     if abs(neg_offset) > abs(pos_offset):
         return pos_offset

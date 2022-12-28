@@ -116,10 +116,12 @@ def general_tubes():
     for i in range(multi_number):
         offset.append(dry_run_func(lengths[i], hole_count[i], hole_rads[i]/2))
     
+    print(offset)
+
     if multi_number == 1:
-        draw_func(lengths[0],widths[0],0,total_tubes[0],hole_count[0],hole_rads[0]/2,count,corners[0],manual_mode,offset[i])
+        draw_func(lengths[0],widths[0],0,total_tubes[0],hole_count[0],hole_rads[0]/2,count,corners[0],manual_mode,offset[0])
     else:
         for i in range(multi_number):
-            x, count = draw_func(lengths[i],widths[i],x,total_tubes[i],hole_count[i],hole_rads[i]/2,count,corners[i],manual_mode,offset[i])              
+            x, count = draw_func(lengths[i],widths[i],x,total_tubes[i],hole_count[i],hole_rads[i]/2,count,corners[i],manual_mode,offset[0])              
 
 

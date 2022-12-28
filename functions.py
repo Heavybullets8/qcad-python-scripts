@@ -114,6 +114,14 @@ def constants():
 
 # Drawing Function
 def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_offset):
+
+    y_offset = [0, -4, -6]
+
+    reversed_list = list(reversed(y_offset))  # Reverse the y_offset list
+    y_offset.extend(reversed_list)  # Append the reversed list to y_offset
+
+
+    print("y_offset: {}".format(y_offset))
     with open("box_maker.js","a") as file:
         excess = 0
         prior_excess = 0
@@ -143,7 +151,11 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
             count = 0
             floor = 1
             roof = 1
+            y_offset_count = 0
+            print (range(number))
             for hole in range(number):
+                y_offset1 = y_offset[y_offset_count]
+                print("y_offset1: {}".format(y_offset1))
                 count+=1
                 # If hole location exceeds plasma table length, set a different layer thats ignored in sheetcam
                 
@@ -165,11 +177,11 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                         math = length/2
                     # Lower half of the length
                     elif hole+1 < number/2:
-                        math = (((length/2))/((number/2)-0.5)*floor-abs(y_offset))
+                        math = (((length/2))/((number/2)-0.5)*floor-abs(y_offset1))
                         floor+=1
                     # Upper half of the length
                     elif count >= number/2:
-                        math = ((length/2))/((number/2)-0.5)*roof+length/2+abs(y_offset)
+                        math = ((length/2))/((number/2)-0.5)*roof+length/2+abs(y_offset1)
                         roof+=1
                     
                     
@@ -177,9 +189,9 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                 else:
                     # Change offset to positive or negative depending on the side of the tube they are on
                     if count >= number/2:
-                        y_offset = y_offset * -1
+                        y_offset1 = y_offset1 * -1
                     else:
-                        y_offset = abs(y_offset)
+                        y_offset1 = abs(y_offset1)
                     
                     if hole == 0:
                         math = 6
@@ -188,7 +200,7 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                         math = length-6
                     # Draw Holes between the two 6 inch hard coded holes
                     else:
-                        math = ((length)/(number-1))*hole+y_offset
+                        math = ((length)/(number-1))*hole+y_offset1
                 
                 # If target hole exceeds limits of plasma table, mark them for reference, so theyre not cut out
                 if math > 118:
@@ -197,7 +209,11 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                     file.write('setCurrentLayer("Holes");\n')
                 
                 file.write("drawCircle({current_width},{math},{rad});\n".format(current_width=current_width,math=math,rad=rad))
+                
+                y_offset_count+=1  # Increment the counter
 
+
+                
             tube_count+=1
             x = x + float(width) + excess
     return x, count
@@ -263,17 +279,29 @@ def dry_run_func(length,number,rad):
                                                         
                 hole_location.append((length/(number-1))*hole+temp)
 
-        
-    y_offset = hole_check_func(hole_location, rad)            
 
-    
-    if y_offset != 0:
-        print("\nThe holes were offset, so that they are not touching the 4ft centers:\
-            \n43-49\n91-97\n139-145\n189-193\n235-241\
-            \nYou should double check that holes are not touching these numbers, and are spaced well..")
+    y_offset = [0]
+    # Set the counter variables to 0 and the length of the list minus 1
+    counter_a = 0
+    counter_b = len(hole_location) - 1
+
+    # Loop until the two counter variables meet in the middle of the list
+    while counter_a < counter_b:
+        print(hole_location[counter_a])
+        print(hole_location[counter_b])
+        y_offset.append(hole_check_func([hole_location[counter_a], hole_location[counter_b]], rad))
+
+
         print("Current Offset:",y_offset)
+        # Increment the first counter variable and decrement the second one
+        counter_a += 1
+        counter_b -= 1
 
-        
+    # If the list has an odd number of elements, print the element in the middle
+    if len(hole_location) % 2 != 0:
+        print(hole_location[len(hole_location) // 2])
+         
+
     return y_offset
             
  

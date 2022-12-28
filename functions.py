@@ -115,10 +115,12 @@ def constants():
 # Drawing Function
 def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_offset):
 
-    y_offset = [0, -4, -6]
-
+    number = int(number)
     reversed_list = list(reversed(y_offset))  # Reverse the y_offset list
     y_offset.extend(reversed_list)  # Append the reversed list to y_offset
+
+    if number % 2 == 1:  # Check if number is odd
+        y_offset.insert(len(y_offset) // 2, 0)  # Insert 0 at the middle of the list
 
 
     print("y_offset: {}".format(y_offset))

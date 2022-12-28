@@ -115,7 +115,7 @@ def constants():
 # Drawing Function
 def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_offset):
 
-    number = int(number)
+    # Reverse the list, then append it to itself
     reversed_list = list(reversed(y_offset))  # Reverse the y_offset list
     y_offset.extend(reversed_list)  # Append the reversed list to y_offset
 

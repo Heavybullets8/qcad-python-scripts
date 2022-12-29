@@ -115,9 +115,14 @@ def constants():
 # Drawing Function
 def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_offset):
 
-    # Reverse the list, then append it to itself
-    reversed_list = list(reversed(y_offset))  # Reverse the y_offset list
-    y_offset.extend(reversed_list)  # Append the reversed list to y_offset
+    # Reverse the list
+    reversed_list = list(reversed(y_offset))
+
+    # Negate each element in the reversed list
+    inverse_list = [-x for x in reversed_list]
+
+    # Append the inverse list to y_offset
+    y_offset.extend(inverse_list)
 
     if number % 2 == 1:  # Check if number is odd
         y_offset.insert(len(y_offset) // 2, 0)  # Insert 0 at the middle of the list
@@ -189,12 +194,7 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
                     
                 # Even number of holes per tube
                 else:
-                    # Change offset to positive or negative depending on the side of the tube they are on
-                    if count >= number/2:
-                        y_offset1 = y_offset1 * -1
-                    else:
-                        y_offset1 = abs(y_offset1)
-                    
+
                     if hole == 0:
                         math = 6
                     # Last row of holes end up 6 inches from the top
@@ -311,48 +311,79 @@ def dry_run_func(length,number,rad):
 
 
 def hole_check_func(numbers, rad):
-    def check_collision(number, offset):
-        # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
-        if 43 - (rad / 2) <= number + offset <= 49 + (rad / 2) or \
-           91 - (rad / 2) <= number + offset <= 97 + (rad / 2) or \
-           139 - (rad / 2) <= number + offset <= 145 + (rad / 2) or \
-           189 - (rad / 2) <= number + offset <= 193 + (rad / 2) or \
-           235 - (rad / 2) <= number + offset <= 241 + (rad / 2):
-            # If 4 ft center collision occurs on the middle hole, exit
-            if len(numbers) % 2 != 0 and count + 0.5 == len(numbers) / 2:
-                print("Impossible to use an odd number for this length tube.. Exiting")
-                exit()
-            else:
-                return True
+    def check_collision(numbers):
+        for number in numbers:
+            # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
+            if 43 - (rad / 2) <= number <= 49 + (rad / 2) or \
+            91 - (rad / 2) <= number  <= 97 + (rad / 2) or \
+            139 - (rad / 2) <= number  <= 145 + (rad / 2) or \
+            189 - (rad / 2) <= number <= 193 + (rad / 2) or \
+            235 - (rad / 2) <= number  <= 241 + (rad / 2):
+                # If 4 ft center collision occurs on the middle hole, exit
+                if len(numbers) % 2 != 0 and count + 0.5 == len(numbers) / 2:
+                    print("Impossible to use an odd number for this length tube.. Exiting")
+                    exit()
+                else:
+                    return True
         return False
+
 
     neg_offset = 0
     pos_offset = 0
-    while True:
-        count = 0
-        for i, number in enumerate(numbers):
-            if i < len(numbers) / 2:
-                temp_offset = abs(neg_offset)
-            else:
-                temp_offset = neg_offset
-            if not check_collision(number, temp_offset):
-                count += 1
-        if count == len(numbers):
-            break
-        neg_offset -= 1
+    number1 = numbers[0]
+    number2 = numbers[1]
+    print("Checking:",number1,number2)
 
-    while True:
-        count = 0
-        for i, number in enumerate(numbers):
-            if i < len(numbers) / 2:
-                temp_offset = pos_offset * -1
-            else:
-                temp_offset = abs(pos_offset)
-            if not check_collision(number, temp_offset):
-                count += 1
-        if count == len(numbers):
-            break
-        pos_offset += 1
+
+    print("positive")
+    offset=0
+    while check_collision([number1+offset, number2-offset]) == True:
+        offset += 1
+        print ([number1+offset, number2-offset])
+
+
+    pos_offset = offset
+
+    offset=0
+    print("negaitve")
+    while check_collision([number1-offset, number2+offset]) == True:
+        offset += 1
+        print ([number1-offset, number2+offset])
+    neg_offset = offset
+
+
+
+    print ("Positive Offset:",pos_offset)
+    print ("Negative Offset:",neg_offset)
+
+
+    # neg_offset = 0
+    # pos_offset = 0
+    # while True:
+    #     count = 0
+    #     for i, number in enumerate(numbers):
+    #         if i < len(numbers) / 2:
+    #             temp_offset = abs(neg_offset)
+    #         else:
+    #             temp_offset = neg_offset
+    #         if not check_collision(number, temp_offset):
+    #             count += 1
+    #     if count == len(numbers):
+    #         break
+    #     neg_offset -= 1
+
+    # while True:
+    #     count = 0
+    #     for i, number in enumerate(numbers):
+    #         if i < len(numbers) / 2:
+    #             temp_offset = pos_offset * -1
+    #         else:
+    #             temp_offset = abs(pos_offset)
+    #         if not check_collision(number, temp_offset):
+    #             count += 1
+    #     if count == len(numbers):
+    #         break
+    #     pos_offset += 1
         
     # Return whichever value is lowest, ensuring the least amount of deviation possible
     if abs(neg_offset) > abs(pos_offset):

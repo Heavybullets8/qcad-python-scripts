@@ -306,51 +306,43 @@ def dry_run_func(length,number,rad):
 def hole_check_func(numbers, rad):
     def check_collision(numbers):
         for number in numbers:
-            # If hole lands on a 4 foot center, or close to it, return a relocation value, where it'll be clear
+            # If hole lands on a 4 foot center, or close to it, return True
             if 43 - (rad / 2) <= number <= 49 + (rad / 2) or \
             91 - (rad / 2) <= number  <= 97 + (rad / 2) or \
             139 - (rad / 2) <= number  <= 145 + (rad / 2) or \
             189 - (rad / 2) <= number <= 193 + (rad / 2) or \
             235 - (rad / 2) <= number  <= 241 + (rad / 2):
-                # If 4 ft center collision occurs on the middle hole, exit
-                if len(numbers) % 2 != 0 and count + 0.5 == len(numbers) / 2:
-                    print("Impossible to use an odd number for this length tube.. Exiting")
-                    exit()
-                else:
-                    return True
+                return True
         return False
 
-
-    neg_offset = 0
+    # Initialize the positive and negative offsets to 0
     pos_offset = 0
-    number1 = numbers[0]
-    number2 = numbers[1]
-    print("Checking:",number1,number2)
+    neg_offset = 0
 
+    # Print the numbers being checked
+    print("Checking:", numbers[0], numbers[1])
 
-    offset=0
-    while check_collision([number1+offset, number2-offset]) == True:
+    # Increment the offset until the hole is clear of the 4 foot centers
+    offset = 0
+    while check_collision([numbers[0] + offset, numbers[1] - offset]) == True:
         offset += 1
     pos_offset = offset
 
-
-    offset=0
-    while check_collision([number1-offset, number2+offset]) == True:
+    # Increment the offset until the hole is clear of the 4 foot centers
+    offset = 0
+    while check_collision([numbers[0] - offset, numbers[1] + offset]) == True:
         offset += 1
     neg_offset = offset
 
+    # Print the positive and negative offsets
+    print("Positive Offset:", pos_offset)
+    print("Negative Offset:", neg_offset)
+    print("")
+
+    # Return the minimum of the positive and negative offsets, based on the absolute value of the offset
+    return min(pos_offset, neg_offset, key=abs)
 
 
-    print ("Positive Offset:",pos_offset)
-    print ("Negative Offset:",neg_offset)
-    print ("")
-
-
-    if abs(neg_offset) > abs(pos_offset):
-        return pos_offset
-    else:
-        return neg_offset
-        
         
         
         

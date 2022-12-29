@@ -128,7 +128,6 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
         y_offset.insert(len(y_offset) // 2, 0)  # Insert 0 at the middle of the list
 
 
-    print("y_offset: {}".format(y_offset))
     with open("box_maker.js","a") as file:
         excess = 0
         prior_excess = 0
@@ -159,10 +158,8 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
             floor = 1
             roof = 1
             y_offset_count = 0
-            print (range(number))
             for hole in range(number):
                 y_offset1 = y_offset[y_offset_count]
-                print("y_offset1: {}".format(y_offset1))
                 count+=1
                 # If hole location exceeds plasma table length, set a different layer thats ignored in sheetcam
                 
@@ -289,12 +286,8 @@ def dry_run_func(length,number,rad):
 
     # Loop until the two counter variables meet in the middle of the list
     while counter_a < counter_b:
-        print(hole_location[counter_a])
-        print(hole_location[counter_b])
         y_offset.append(hole_check_func([hole_location[counter_a], hole_location[counter_b]], rad))
 
-
-        print("Current Offset:",y_offset)
         # Increment the first counter variable and decrement the second one
         counter_a += 1
         counter_b -= 1
@@ -335,57 +328,24 @@ def hole_check_func(numbers, rad):
     print("Checking:",number1,number2)
 
 
-    print("positive")
     offset=0
     while check_collision([number1+offset, number2-offset]) == True:
         offset += 1
-        print ([number1+offset, number2-offset])
-
-
     pos_offset = offset
 
+
     offset=0
-    print("negaitve")
     while check_collision([number1-offset, number2+offset]) == True:
         offset += 1
-        print ([number1-offset, number2+offset])
     neg_offset = offset
 
 
 
     print ("Positive Offset:",pos_offset)
     print ("Negative Offset:",neg_offset)
+    print ("")
 
 
-    # neg_offset = 0
-    # pos_offset = 0
-    # while True:
-    #     count = 0
-    #     for i, number in enumerate(numbers):
-    #         if i < len(numbers) / 2:
-    #             temp_offset = abs(neg_offset)
-    #         else:
-    #             temp_offset = neg_offset
-    #         if not check_collision(number, temp_offset):
-    #             count += 1
-    #     if count == len(numbers):
-    #         break
-    #     neg_offset -= 1
-
-    # while True:
-    #     count = 0
-    #     for i, number in enumerate(numbers):
-    #         if i < len(numbers) / 2:
-    #             temp_offset = pos_offset * -1
-    #         else:
-    #             temp_offset = abs(pos_offset)
-    #         if not check_collision(number, temp_offset):
-    #             count += 1
-    #     if count == len(numbers):
-    #         break
-    #     pos_offset += 1
-        
-    # Return whichever value is lowest, ensuring the least amount of deviation possible
     if abs(neg_offset) > abs(pos_offset):
         return pos_offset
     else:

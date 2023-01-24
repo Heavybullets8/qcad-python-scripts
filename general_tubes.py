@@ -114,9 +114,11 @@ def general_tubes():
     count = 1
     offset = []
     for i in range(multi_number):
+        print("Tube count: {count}".format(count=count))
         offset.append(dry_run_func(lengths[i], hole_count[i], hole_rads[i]/2))
+        count+=1
     
-
+    count = 1
     if multi_number == 1:
         draw_func(lengths[0],widths[0],0,total_tubes[0],hole_count[0],hole_rads[0]/2,count,corners[0],manual_mode,offset[0])
     else:

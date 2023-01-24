@@ -132,23 +132,22 @@ def draw_func(length,width,x,tubes,number,rad,tube_count,corners,manual_mode,y_o
         excess = 0
         prior_excess = 0
         for i in range(tubes):
-
             # Draw Rectangle
             file.write('setCurrentLayer("Perimeter");\n')
-            if manual_mode == True:
+            if manual_mode:
                 excess = convert_to_float(input("What is the excess (to the left) of tube {tube_count}?: ".format(tube_count=tube_count)))
-                if excess == None:
+                if excess is None:
                     excess = prior_excess
-                
+
                 # If there was no change, do not add the excess
                 if excess == prior_excess:
                     excess = 0
 
-                # Remove excess from the previous exess, avoiding doubling up widths
+                # Remove excess from the previous excess, avoiding doubling up widths
                 if excess > prior_excess:
                     excess = excess - prior_excess
                     prior_excess = excess
-                
+
                 
             file.write("drawRectangle({width},{length},{x},0);\n".format(width=width,length=length,x=x+excess))
 
@@ -292,9 +291,6 @@ def dry_run_func(length,number,rad):
         counter_a += 1
         counter_b -= 1
 
-    # If the list has an odd number of elements, print the element in the middle
-    if len(hole_location) % 2 != 0:
-        print(hole_location[len(hole_location) // 2])
          
 
     return y_offset
